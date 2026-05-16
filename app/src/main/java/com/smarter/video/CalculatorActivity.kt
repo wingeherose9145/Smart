@@ -84,27 +84,35 @@ class CalculatorActivity : AppCompatActivity() {
 
             btn.setTextColor(0xFFFFFFFF.toInt())
 
-            if (
-                text == "+" ||
-                text == "-" ||
-                text == "×" ||
-                text == "÷" ||
-                text == "=" ||
-                text == "OFF" ||
-                text == "Σ" ||
-                text == "∫"
-            ) {
+            val btn = Button(this).apply {
 
-                btn.setBackgroundResource(
-                    R.drawable.calculator_button_orange
-                )
+    this.text = text
 
-            } else {
+    textSize = 16f
 
-                btn.setBackgroundResource(
-                    R.drawable.calculator_button_dark
-                )
-            }
+    setTextColor(0xFFFFFFFF.toInt())
+
+    setBackgroundResource(R.drawable.calculator_button_orange)
+
+    layoutParams = GridLayout.LayoutParams().apply {
+
+        width = 0
+
+        height = 120
+
+        columnSpec = GridLayout.spec(
+            GridLayout.UNDEFINED,
+            1f
+        )
+
+        setMargins(6, 6, 6, 6)
+    }
+
+    setOnClickListener {
+
+        onButtonClick(text)
+    }
+}
 
             val row = index / 4
 
