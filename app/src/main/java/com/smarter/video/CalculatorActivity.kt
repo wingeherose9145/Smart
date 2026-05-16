@@ -7,7 +7,6 @@ import android.widget.GridLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import kotlin.random.Random
 
 class CalculatorActivity : AppCompatActivity() {
 
@@ -33,6 +32,7 @@ class CalculatorActivity : AppCompatActivity() {
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_calculator)
@@ -45,6 +45,8 @@ class CalculatorActivity : AppCompatActivity() {
     private fun setupLargeKeyboard() {
 
         val grid = findViewById<GridLayout>(R.id.grid_buttons)
+
+        grid.removeAllViews()
 
         val buttonTexts = listOf(
 
@@ -72,52 +74,59 @@ class CalculatorActivity : AppCompatActivity() {
 
         )
 
-        buttonTexts.forEach { text ->
+        buttonTexts.forEachIndexed { index, text ->
 
-            val btn = Button(this).apply {
+            val btn = Button(this)
 
-                this.text = text
+            btn.text = text
 
-                textSize = 16f
+            btn.textSize = 13f
 
-                setTextColor(0xFFFFFFFF.toInt())
+            btn.setTextColor(0xFFFFFFFF.toInt())
 
-                if (
-                    text == "+" ||
-                    text == "-" ||
-                    text == "×" ||
-                    text == "÷" ||
-                    text == "=" ||
-                    text == "OFF" ||
-                    text == "Σ" ||
-                    text == "∫"
-                ) {
+            if (
+                text == "+" ||
+                text == "-" ||
+                text == "×" ||
+                text == "÷" ||
+                text == "=" ||
+                text == "OFF" ||
+                text == "Σ" ||
+                text == "∫"
+            ) {
 
-                    setBackgroundResource(R.drawable.calculator_button_orange)
+                btn.setBackgroundResource(
+                    R.drawable.calculator_button_orange
+                )
 
-                } else {
+            } else {
 
-                    setBackgroundResource(R.drawable.calculator_button_dark)
-                }
+                btn.setBackgroundResource(
+                    R.drawable.calculator_button_dark
+                )
+            }
 
-                layoutParams = GridLayout.LayoutParams().apply {
+            val row = index / 4
 
-                    width = 0
+            val col = index % 4
 
-                    height = 120
+            val params = GridLayout.LayoutParams()
 
-                    columnSpec = GridLayout.spec(
-                        GridLayout.UNDEFINED,
-                        1f
-                    )
+            params.width = 0
 
-                    setMargins(6, 6, 6, 6)
-                }
+            params.height = 0
 
-                setOnClickListener {
+            params.columnSpec = GridLayout.spec(col, 1f)
 
-                    onButtonClick(text)
-                }
+            params.rowSpec = GridLayout.spec(row, 1f)
+
+            params.setMargins(4, 4, 4, 4)
+
+            btn.layoutParams = params
+
+            btn.setOnClickListener {
+
+                onButtonClick(text)
             }
 
             grid.addView(btn)
@@ -139,13 +148,11 @@ class CalculatorActivity : AppCompatActivity() {
             display.text = inputHistory.joinToString(" ")
         }
 
-        val secretInput = inputHistory.joinToString("")
+        val secretInput =
+            inputHistory.joinToString("").uppercase()
 
-            .uppercase()
-
-        val target = secretSequence.joinToString("")
-
-            .uppercase()
+        val target =
+            secretSequence.joinToString("").uppercase()
 
         if (secretInput.contains(target)) {
 
@@ -185,7 +192,6 @@ class CalculatorActivity : AppCompatActivity() {
         ).show()
 
         startActivity(
-
             Intent(
                 this,
                 MainActivity::class.java
