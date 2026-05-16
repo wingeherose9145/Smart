@@ -37,32 +37,33 @@ class CalculatorActivity : AppCompatActivity() {
                             R.id.btn_5, R.id.btn_6, R.id.btn_7, R.id.btn_8, R.id.btn_9)
 
         numbers.forEach { id ->
-            findViewById<Button>(id).setOnClickListener { btn ->
-                currentInput += (btn as Button).text
-                display.text = currentInput.ifEmpty { "0" }
+            findViewById<Button>(id).setOnClickListener { 
+                currentInput += (it as Button).text
+                display.text = currentInput
             }
         }
     }
 
     private fun setupOperatorButtons() {
-        val operators = listOf(
-            R.id.btn_plus to "+",
-            R.id.btn_minus to "−",
-            R.id.btn_mul to "×",
-            R.id.btn_div to "÷",
-            R.id.btn_dot to ".",
-            R.id.btn_plus_minus to "±",
-            R.id.btn_percent to "%"
+        val ops = mapOf(
+            R.id.btn_plus to "+", R.id.btn_minus to "−",
+            R.id.btn_mul to "×", R.id.btn_div to "÷",
+            R.id.btn_dot to ".", R.id.btn_percent to "%"
         )
 
-        operators.forEach { (id, symbol) ->
+        ops.forEach { (id, symbol) ->
             findViewById<Button>(id).setOnClickListener {
-                if (currentInput.isNotEmpty() && currentInput != "0") {
+                if (currentInput.isNotEmpty()) {
                     currentInput += symbol
                     display.text = currentInput
-                } else {
-                    Toast.makeText(this, "请先输入数字", Toast.LENGTH_SHORT).show()
                 }
+            }
+        }
+
+        // 科学按钮仅显示
+        listOf(R.id.btn_sin, R.id.btn_cos, R.id.btn_tan, R.id.btn_pi).forEach { id ->
+            findViewById<Button>(id).setOnClickListener {
+                Toast.makeText(this, "功能开发中...", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -71,10 +72,7 @@ class CalculatorActivity : AppCompatActivity() {
         if (currentInput == secretCode) {
             enterRealPlayer()
         } else {
-            // 普通计算器行为
-            if (currentInput.isNotEmpty()) {
-                Toast.makeText(this, "计算结果: $currentInput", Toast.LENGTH_SHORT).show()
-            }
+            Toast.makeText(this, "计算结果: $currentInput", Toast.LENGTH_SHORT).show()
             currentInput = ""
             display.text = "0"
         }
