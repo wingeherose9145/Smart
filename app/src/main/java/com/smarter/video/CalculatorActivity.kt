@@ -12,22 +12,22 @@ import kotlin.random.Random
 class CalculatorActivity : AppCompatActivity() {
 
     private lateinit var display: TextView
-    private var currentInput = ""
-    private val passwordSequence = listOf("15", "COS", "9", "inv")  // 密码序列，可自行修改
+    private var inputCount = 0
+    private val secretSequence = listOf("15", "COS", "9", "inv")
 
     private var inputHistory = mutableListOf<String>()
 
     private val quotes = listOf(
-        "知识就是力量",
-        "The only way to do great work is to love what you do",
-        "E = mc²",
-        "π ≈ 3.1415926",
         "F = ma",
-        "成功源于坚持",
-        "V = IR",
+        "E = mc²",
+        "π ≈ 3.1416",
+        "知识就是力量",
         "Stay curious",
-        "量子纠缠",
-        "熵增原理"
+        "量子力学",
+        "熵增不灭",
+        "The universe is under no obligation to make sense to you",
+        "G = 6.67430 × 10⁻¹¹",
+        "成功是积累的结果"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,81 +35,62 @@ class CalculatorActivity : AppCompatActivity() {
         setContentView(R.layout.activity_calculator)
 
         display = findViewById(R.id.tv_display)
-
         setupLargeKeyboard()
     }
 
     private fun setupLargeKeyboard() {
         val grid = findViewById<GridLayout>(R.id.grid_buttons)
-        grid.columnCount = 4
 
-        // 48个按钮内容（可自行调整）
-        val buttons = listOf(
-            "sin", "cos", "tan", "log",
-            "15", "Inv", "9", "inv",
-            "7", "8", "9", "÷",
-            "4", "5", "6", "×",
-            "1", "2", "3", "−",
-            "0", ".", "=", "+",
-            "π", "e", "√", "%",
-            "Δ", "∑", "∫", "∞",
-            "kg", "m", "s", "N",
-            "J", "W", "V", "A",
-            "Hz", "Ω", "F", "H",
-            "Pa", "mol", "cd", "K"
+        val buttonTexts = listOf(
+            "sin","cos","tan","log","15","Inv","9","inv",
+            "7","8","9","÷","4","5","6","×",
+            "1","2","3","−","0",".","AC","+",
+            "π","e","√","%","Δ","∑","∫","∞",
+            "kg","m","s","N","J","W","V","A",
+            "Hz","Ω","F","H","Pa","mol","cd","K"
         )
 
-        buttons.forEach { text ->
-            val button = Button(this).apply {
+        buttonTexts.forEach { text ->
+            val btn = Button(this).apply {
                 this.text = text
-                textSize = 16f
+                textSize = 18f
                 setBackgroundResource(R.drawable.calculator_button_background)
                 setTextColor(0xFFFFFFFF.toInt())
                 layoutParams = GridLayout.LayoutParams().apply {
                     width = 0
-                    height = 85
+                    height = 78
                     columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
                     setMargins(4, 4, 4, 4)
                 }
-                setOnClickListener {
-                    onButtonClicked(text)
-                }
+                setOnClickListener { onButtonClick(text) }
             }
-            grid.addView(button)
+            grid.addView(btn)
         }
     }
 
-    private fun onButtonClicked(text: String) {
-        currentInput += text
-        display.text = currentInput
-
+    private fun onButtonClick(text: String) {
+        inputCount++
         inputHistory.add(text)
 
-        // 显示随机名言
-        if (Random.nextInt(3) == 0) {
-            display.append("\n\n" + quotes.random())
+        // 输入3个以上后，只显示随机名言
+        if (inputCount >= 3) {
+            display.text = quotes.random()
+        } else {
+            display.text = inputHistory.joinToString(" ")
         }
 
-        // 检查密码序列（连续输入）
-        checkPasswordSequence()
-    }
-
-    private fun checkPasswordSequence() {
-        val historyStr = inputHistory.joinToString("")
-        if (historyStr.contains(passwordSequence.joinToString(""))) {
+        // 检查密码序列
+        if (inputHistory.joinToString("").contains(secretSequence.joinToString(""))) {
             enterRealPlayer()
         }
 
-        // 保持历史记录在合理长度
-        if (inputHistory.size > 20) {
-            inputHistory.removeAt(0)
-        }
+        // 限制历史长度
+        if (inputHistory.size > 15) inputHistory.removeAt(0)
     }
 
     private fun enterRealPlayer() {
-        Toast.makeText(this, "验证通过，正在进入...", Toast.LENGTH_SHORT).show()
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish() // 进入后关闭伪装界面
+        Toast.makeText(this, "验证通过...", Toast.LENGTH_SHORT).show()
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 }
