@@ -3,9 +3,11 @@ package com.smarter.video
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.GridLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import kotlin.random.Random
 
 class CalculatorActivity : AppCompatActivity() {
 
@@ -13,7 +15,7 @@ class CalculatorActivity : AppCompatActivity() {
 
     private var inputCount = 0
 
-    private val secretSequence = listOf("15", "COS", "9", "inv")
+    private val secretSequence = listOf("7", "COS", "9", "π")
 
     private var inputHistory = mutableListOf<String>()
 
@@ -25,94 +27,100 @@ class CalculatorActivity : AppCompatActivity() {
         "Stay curious",
         "量子力学",
         "熵增不灭",
-        "The universe is under no obligation to make sense to you",
+        "关你屁事！",
         "G = 6.67430 × 10⁻¹¹",
         "成功是积累的结果"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_calculator)
 
         display = findViewById(R.id.tv_display)
 
-        setupButtons()
+        setupLargeKeyboard()
     }
 
-    private fun setupButtons() {
+    private fun setupLargeKeyboard() {
 
-        val buttons = listOf(
-            R.id.btnSin,
-            R.id.btnCos,
-            R.id.btnTan,
-            R.id.btnClear,
+        val grid = findViewById<GridLayout>(R.id.grid_buttons)
 
-            R.id.btn7,
-            R.id.btn8,
-            R.id.btn9,
-            R.id.btnDivide,
+        val buttonTexts = listOf(
 
-            R.id.btn4,
-            R.id.btn5,
-            R.id.btn6,
-            R.id.btnMultiply,
+            "sin", "cos", "tan", "π",
 
-            R.id.btn1,
-            R.id.btn2,
-            R.id.btn3,
-            R.id.btnMinus,
+            "lg", "ln", "eˣ", "%",
 
-            R.id.btn0,
-            R.id.btnDot,
-            R.id.btnEqual,
-            R.id.btnPlus,
+            "7", "8", "9", "÷",
 
-            R.id.btnPi,
-            R.id.btnSqrt,
-            R.id.btnPow,
-            R.id.btnFact，
+            "4", "5", "6", "×",
 
-            R.id.btnLg,
-            R.id.btnLn,
-            R.id.btnExp,
-            R.id.btnMod,
+            "1", "2", "3", "-",
 
-            R.id.btnDeg,
-            R.id.btnRad,
-            R.id.btnAbs,
-            R.id.btnInv,
+            "0", ".", "=", "+",
 
-            R.id.btnSum,
-            R.id.btnInt,
-            R.id.btnInf,
-            R.id.btnDel,
+            "deg", "rad", "|x|", "1/x",
 
-            R.id.btnKg,
-            R.id.btnMol,
-            R.id.btnAmp,
-            R.id.btnKel,
+            "Σ", "∫", "∞", "DEL",
 
-            R.id.btnHz,
-            R.id.btnOhm,
-            R.id.btnFar,
-            R.id.btnHen,
+            "kg", "mol", "A", "K",
 
-            R.id.btnVec,
-            R.id.btnMat,
-            R.id.btnRnd,
-            R.id.btnOff
+            "Hz", "Ω", "F", "H",
+
+            "VEC", "MAT", "RND", "OFF"
+
         )
 
-        buttons.forEach { id ->
+        buttonTexts.forEach { text ->
 
-            val button = findViewById<Button>(id)
+            val btn = Button(this).apply {
 
-            button.setOnClickListener {
+                this.text = text
 
-                val text = button.text.toString()
+                textSize = 16f
 
-                onButtonClick(text)
+                setTextColor(0xFFFFFFFF.toInt())
+
+                if (
+                    text == "+" ||
+                    text == "-" ||
+                    text == "×" ||
+                    text == "÷" ||
+                    text == "=" ||
+                    text == "OFF" ||
+                    text == "Σ" ||
+                    text == "∫"
+                ) {
+
+                    setBackgroundResource(R.drawable.calculator_button_orange)
+
+                } else {
+
+                    setBackgroundResource(R.drawable.calculator_button_dark)
+                }
+
+                layoutParams = GridLayout.LayoutParams().apply {
+
+                    width = 0
+
+                    height = 120
+
+                    columnSpec = GridLayout.spec(
+                        GridLayout.UNDEFINED,
+                        1f
+                    )
+
+                    setMargins(6, 6, 6, 6)
+                }
+
+                setOnClickListener {
+
+                    onButtonClick(text)
+                }
             }
+
+            grid.addView(btn)
         }
     }
 
@@ -131,9 +139,15 @@ class CalculatorActivity : AppCompatActivity() {
             display.text = inputHistory.joinToString(" ")
         }
 
-        if (inputHistory.joinToString("")
-                .contains(secretSequence.joinToString(""))
-        ) {
+        val secretInput = inputHistory.joinToString("")
+
+            .uppercase()
+
+        val target = secretSequence.joinToString("")
+
+            .uppercase()
+
+        if (secretInput.contains(target)) {
 
             enterRealPlayer()
         }
@@ -142,13 +156,41 @@ class CalculatorActivity : AppCompatActivity() {
 
             inputHistory.removeAt(0)
         }
+
+        when (text) {
+
+            "OFF" -> finish()
+
+            "DEL" -> {
+
+                if (inputHistory.isNotEmpty()) {
+
+                    inputHistory.removeAt(
+                        inputHistory.lastIndex
+                    )
+
+                    display.text =
+                        inputHistory.joinToString(" ")
+                }
+            }
+        }
     }
 
     private fun enterRealPlayer() {
 
-        Toast.makeText(this, "验证通过...", Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            this,
+            "验证通过...",
+            Toast.LENGTH_SHORT
+        ).show()
 
-        startActivity(Intent(this, MainActivity::class.java))
+        startActivity(
+
+            Intent(
+                this,
+                MainActivity::class.java
+            )
+        )
 
         finish()
     }
