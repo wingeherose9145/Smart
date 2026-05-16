@@ -4,12 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.Smart.Ex'
-
+    namespace 'com.smarter.video'        // ← 推荐改成这个（你可以自己改）
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.Smart.Ex"
+        applicationId "com.smarter.video"   // ← 必须和上面 namespace 一致
         minSdk 24
         targetSdk 34
 
