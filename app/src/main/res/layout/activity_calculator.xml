@@ -125,6 +125,27 @@
             android:textSize="16sp"
             android:background="@drawable/calculator_button_dark"/>
 
+<Button
+    android:id="@+id/btnPow"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_columnWeight="1"
+    android:text="x²"
+    android:textSize="18sp"
+    android:textColor="#FFFFFF"
+    android:background="@drawable/calculator_button_orange"/>
+
+<Button
+    android:id="@+id/btnFact"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_columnWeight="1"
+    android:text="!"
+    android:textSize="18sp"
+    android:textColor="#FFFFFF"
+    android:background="@drawable/calculator_button_orange"/>
+        
+
         <!-- 第3行 -->
         <Button
             android:id="@+id/btn7"
