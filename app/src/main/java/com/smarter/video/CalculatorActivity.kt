@@ -20,6 +20,7 @@ class CalculatorActivity : AppCompatActivity() {
         display = findViewById(R.id.tv_display)
 
         setupNumberButtons()
+        setupOperatorButtons()
 
         findViewById<Button>(R.id.btn_clear).setOnClickListener {
             currentInput = ""
@@ -32,16 +33,36 @@ class CalculatorActivity : AppCompatActivity() {
     }
 
     private fun setupNumberButtons() {
-        val buttonIds = listOf(
-            R.id.btn_0, R.id.btn_1, R.id.btn_2, R.id.btn_3,
-            R.id.btn_4, R.id.btn_5, R.id.btn_6, R.id.btn_7,
-            R.id.btn_8, R.id.btn_9
+        val numbers = listOf(R.id.btn_0, R.id.btn_1, R.id.btn_2, R.id.btn_3, R.id.btn_4,
+                            R.id.btn_5, R.id.btn_6, R.id.btn_7, R.id.btn_8, R.id.btn_9)
+
+        numbers.forEach { id ->
+            findViewById<Button>(id).setOnClickListener { btn ->
+                currentInput += (btn as Button).text
+                display.text = currentInput.ifEmpty { "0" }
+            }
+        }
+    }
+
+    private fun setupOperatorButtons() {
+        val operators = listOf(
+            R.id.btn_plus to "+",
+            R.id.btn_minus to "−",
+            R.id.btn_mul to "×",
+            R.id.btn_div to "÷",
+            R.id.btn_dot to ".",
+            R.id.btn_plus_minus to "±",
+            R.id.btn_percent to "%"
         )
 
-        buttonIds.forEach { id ->
-            findViewById<Button>(id).setOnClickListener { btn ->
-                currentInput += (btn as Button).text.toString()
-                display.text = currentInput
+        operators.forEach { (id, symbol) ->
+            findViewById<Button>(id).setOnClickListener {
+                if (currentInput.isNotEmpty() && currentInput != "0") {
+                    currentInput += symbol
+                    display.text = currentInput
+                } else {
+                    Toast.makeText(this, "请先输入数字", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -50,7 +71,7 @@ class CalculatorActivity : AppCompatActivity() {
         if (currentInput == secretCode) {
             enterRealPlayer()
         } else {
-            // 模拟计算器运算效果
+            // 普通计算器行为
             if (currentInput.isNotEmpty()) {
                 Toast.makeText(this, "计算结果: $currentInput", Toast.LENGTH_SHORT).show()
             }
