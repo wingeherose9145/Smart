@@ -21,33 +21,30 @@ class CalculatorActivity : AppCompatActivity() {
 
         setupNumberButtons()
 
+        // 清空按钮
         findViewById<Button>(R.id.btn_clear).setOnClickListener {
             currentInput = ""
             display.text = "0"
         }
 
+        // 等号按钮（核心触发点）
         findViewById<Button>(R.id.btn_equals).setOnClickListener {
             checkSecretCode()
-        }
-
-        // 长按显示屏也可进入（备用方式）
-        display.setOnLongClickListener {
-            enterRealPlayer()
-            true
         }
     }
 
     private fun setupNumberButtons() {
-        val btnIds = listOf(
+        val buttonIds = listOf(
             R.id.btn_0, R.id.btn_1, R.id.btn_2, R.id.btn_3,
             R.id.btn_4, R.id.btn_5, R.id.btn_6, R.id.btn_7,
             R.id.btn_8, R.id.btn_9
         )
 
-        btnIds.forEach { id ->
-            findViewById<Button>(id).setOnClickListener {
-                currentInput += findViewById<Button>(id).text
-                display.text = currentInput.ifEmpty { "0" }
+        buttonIds.forEach { id ->
+            findViewById<Button>(id).setOnClickListener { btn ->
+                val number = (btn as Button).text.toString()
+                currentInput += number
+                display.text = currentInput
             }
         }
     }
@@ -56,6 +53,7 @@ class CalculatorActivity : AppCompatActivity() {
         if (currentInput == secretCode) {
             enterRealPlayer()
         } else {
+            // 普通计算器行为
             Toast.makeText(this, "计算结果: $currentInput", Toast.LENGTH_SHORT).show()
             currentInput = ""
             display.text = "0"
@@ -65,6 +63,6 @@ class CalculatorActivity : AppCompatActivity() {
     private fun enterRealPlayer() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
-        // finish()   // 先不关闭计算器，方便测试
+        // finish()  // 暂时不关闭，方便用户多次测试
     }
 }
