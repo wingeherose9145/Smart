@@ -25,9 +25,9 @@
         app:autoSizeTextType="uniform"
         app:autoSizeMinTextSize="14sp"
         app:autoSizeMaxTextSize="36sp"
-        app:autoSizeStepGranularity="2sp"/>
+        app:autoSizeStepGranularity="2sp" />
 
-    <!-- 按钮区 -->
+    <!-- 按钮区域 -->
     <GridLayout
         android:id="@+id/grid_buttons"
         android:layout_width="match_parent"
@@ -36,7 +36,6 @@
         android:rowCount="12">
 
         <!-- 第1行 -->
-
         <Button
             android:id="@+id/btnSin"
             android:layout_width="0dp"
@@ -82,14 +81,13 @@
             android:background="@drawable/calculator_button_dark"/>
 
         <!-- 第2行 -->
-
         <Button
-            android:id="@+id/btnLog"
+            android:id="@+id/btnLg"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_columnWeight="1"
             android:layout_margin="3dp"
-            android:text="log"
+            android:text="lg"
             android:textColor="#FFFFFF"
             android:textSize="16sp"
             android:background="@drawable/calculator_button_orange"/>
@@ -106,29 +104,28 @@
             android:background="@drawable/calculator_button_orange"/>
 
         <Button
-            android:id="@+id/btnE"
+            android:id="@+id/btnExp"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_columnWeight="1"
             android:layout_margin="3dp"
-            android:text="e"
+            android:text="eˣ"
             android:textColor="#FFFFFF"
             android:textSize="16sp"
             android:background="@drawable/calculator_button_dark"/>
 
         <Button
-            android:id="@+id/btnSqrt"
+            android:id="@+id/btnMod"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_columnWeight="1"
             android:layout_margin="3dp"
-            android:text="√"
+            android:text="%"
             android:textColor="#FFFFFF"
             android:textSize="16sp"
             android:background="@drawable/calculator_button_dark"/>
 
         <!-- 第3行 -->
-
         <Button
             android:id="@+id/btn7"
             android:layout_width="0dp"
@@ -174,7 +171,6 @@
             android:background="@drawable/calculator_button_orange"/>
 
         <!-- 第4行 -->
-
         <Button
             android:id="@+id/btn4"
             android:layout_width="0dp"
@@ -220,7 +216,6 @@
             android:background="@drawable/calculator_button_orange"/>
 
         <!-- 第5行 -->
-
         <Button
             android:id="@+id/btn1"
             android:layout_width="0dp"
@@ -266,7 +261,6 @@
             android:background="@drawable/calculator_button_orange"/>
 
         <!-- 第6行 -->
-
         <Button
             android:id="@+id/btn0"
             android:layout_width="0dp"
@@ -309,6 +303,231 @@
             android:text="+"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
+            android:background="@drawable/calculator_button_orange"/>
+
+        <!-- 第7行 -->
+        <Button
+            android:id="@+id/btnDeg"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="3dp"
+            android:text="deg"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:background="@drawable/calculator_button_dark"/>
+
+        <Button
+            android:id="@+id/btnRad"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="3dp"
+            android:text="rad"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:background="@drawable/calculator_button_dark"/>
+
+        <Button
+            android:id="@+id/btnAbs"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="3dp"
+            android:text="|x|"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:background="@drawable/calculator_button_dark"/>
+
+        <Button
+            android:id="@+id/btnInv"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="3dp"
+            android:text="1/x"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:background="@drawable/calculator_button_orange"/>
+
+        <!-- 第8行 -->
+        <Button
+            android:id="@+id/btnSum"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="3dp"
+            android:text="Σ"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:background="@drawable/calculator_button_orange"/>
+
+        <Button
+            android:id="@+id/btnInt"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="3dp"
+            android:text="∫"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:background="@drawable/calculator_button_orange"/>
+
+        <Button
+            android:id="@+id/btnInf"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="3dp"
+            android:text="∞"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:background="@drawable/calculator_button_dark"/>
+
+        <Button
+            android:id="@+id/btnDel"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="3dp"
+            android:text="DEL"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:background="@drawable/calculator_button_orange"/>
+
+        <!-- 第9行 -->
+        <Button
+            android:id="@+id/btnKg"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="3dp"
+            android:text="kg"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:background="@drawable/calculator_button_dark"/>
+
+        <Button
+            android:id="@+id/btnMol"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="3dp"
+            android:text="mol"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:background="@drawable/calculator_button_dark"/>
+
+        <Button
+            android:id="@+id/btnAmp"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="3dp"
+            android:text="A"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:background="@drawable/calculator_button_dark"/>
+
+        <Button
+            android:id="@+id/btnKel"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="3dp"
+            android:text="K"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:background="@drawable/calculator_button_dark"/>
+
+        <!-- 第10行 -->
+        <Button
+            android:id="@+id/btnHz"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="3dp"
+            android:text="Hz"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:background="@drawable/calculator_button_dark"/>
+
+        <Button
+            android:id="@+id/btnOhm"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="3dp"
+            android:text="Ω"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:background="@drawable/calculator_button_dark"/>
+
+        <Button
+            android:id="@+id/btnFar"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="3dp"
+            android:text="F"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:background="@drawable/calculator_button_dark"/>
+
+        <Button
+            android:id="@+id/btnHen"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="3dp"
+            android:text="H"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:background="@drawable/calculator_button_dark"/>
+
+        <!-- 第11行 -->
+        <Button
+            android:id="@+id/btnVec"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="3dp"
+            android:text="VEC"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:background="@drawable/calculator_button_orange"/>
+
+        <Button
+            android:id="@+id/btnMat"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="3dp"
+            android:text="MAT"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:background="@drawable/calculator_button_orange"/>
+
+        <Button
+            android:id="@+id/btnRnd"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="3dp"
+            android:text="RND"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:background="@drawable/calculator_button_dark"/>
+
+        <Button
+            android:id="@+id/btnOff"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="3dp"
+            android:text="OFF"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
             android:background="@drawable/calculator_button_orange"/>
 
     </GridLayout>
