@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    namespace 'com.system.helper'
+    namespace 'com.Smart.Ex'
 
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.system.helper"
+        applicationId "com.Smart.Ex"
         minSdk 24
         targetSdk 34
 
