@@ -5,34 +5,28 @@
     android:orientation="vertical"
     android:background="#0A0A0A">
 
-    <!-- 上方显示区域（缩小高度） -->
+    <!-- 上方显示区域（进一步缩小） -->
     <TextView
         android:id="@+id/tv_display"
         android:layout_width="match_parent"
-        android:layout_height="110dp"
+        android:layout_height="100dp"
         android:background="#1C1C1E"
         android:gravity="center_vertical|start"
         android:padding="16dp"
         android:text="0"
-        android:textSize="32sp"
+        android:textSize="34sp"
         android:textColor="#FFFFFF"
         android:textStyle="bold"
-        android:maxLines="2"
-        android:ellipsize="end" />
+        android:maxLines="2" />
 
-    <!-- 按钮区域（铺满剩余空间） -->
-    <ScrollView
+    <!-- 按钮区域 - 真正铺满 -->
+    <GridLayout
+        android:id="@+id/grid_buttons"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <GridLayout
-            android:id="@+id/grid_buttons"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:columnCount="4"
-            android:padding="8dp" />
-
-    </ScrollView>
+        android:layout_weight="1"
+        android:columnCount="4"
+        android:padding="6dp"
+        android:useDefaultMargins="true" />
 
 </LinearLayout>
