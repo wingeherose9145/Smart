@@ -14,7 +14,7 @@ class CalculatorActivity : AppCompatActivity() {
 
     private var inputCount = 0
 
-    private val secretSequence = listOf("7", "COS", "9","Σ", "Hz"，"π")
+    private val secretSequence = listOf("7", "COS", "6","9","PI")
 
     private var inputHistory = mutableListOf<String>()
 
