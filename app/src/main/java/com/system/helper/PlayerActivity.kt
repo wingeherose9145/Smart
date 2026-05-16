@@ -1,4 +1,4 @@
-package com.system.helper
+package com.smarter.video
 
 import android.content.pm.ActivityInfo
 import android.media.MediaMetadataRetriever
