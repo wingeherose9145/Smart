@@ -58,20 +58,13 @@
         <Button android:id="@+id/btn_3" android:text="3" style="@style/CalculatorButton"/>
         <Button android:id="@+id/btn_plus" android:text="+" style="@style/CalculatorButtonOrange"/>
 
-        <Button android:id="@+id/btn_0" android:text="0" style="@style/CalculatorButton" 
-                android:layout_columnSpan="2" android:layout_width="0dp"/>
+        <Button android:id="@+id/btn_0" android:text="0" 
+                style="@style/CalculatorButton" 
+                android:layout_columnSpan="2" 
+                android:layout_width="0dp"/>
         <Button android:id="@+id/btn_dot" android:text="." style="@style/CalculatorButton"/>
         <Button android:id="@+id/btn_equals" android:text="=" style="@style/CalculatorButtonOrange"/>
 
     </GridLayout>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="长按屏幕或输入 123456 后按 = 进入"
-        android:textColor="#666666"
-        android:textSize="12sp"
-        android:gravity="center"
-        android:layout_marginTop="24dp"/>
 
 </LinearLayout>
