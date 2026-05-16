@@ -10,15 +10,14 @@
     <TextView
         android:id="@+id/tv_display"
         android:layout_width="match_parent"
-        android:layout_height="220dp"
+        android:layout_height="200dp"
         android:background="#1C1C1E"
         android:gravity="end|bottom"
-        android:padding="28dp"
+        android:padding="24dp"
         android:text="0"
-        android:textSize="48sp"
+        android:textSize="42sp"
         android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        android:maxLines="3" />
+        android:textStyle="bold" />
 
     <!-- 按钮区域 -->
     <GridLayout
@@ -27,37 +26,36 @@
         android:columnCount="4"
         android:padding="8dp">
 
+        <!-- 第一行 -->
         <Button android:id="@+id/btn_clear" android:text="AC" style="@style/CalculatorButtonDark"/>
-        <Button android:id="@+id/btn_plus_minus" android:text="±" style="@style/CalculatorButtonDark"/>
-        <Button android:id="@+id/btn_percent" android:text="%" style="@style/CalculatorButtonDark"/>
-        <Button android:id="@+id/btn_div" android:text="÷" style="@style/CalculatorButtonOrange"/>
+        <Button android:id="@+id/btn_inv" android:text="Inv" style="@style/CalculatorButtonDark"/>
+        <Button android:id="@+id/btn_sin" android:text="sin" style="@style/CalculatorButtonDark"/>
+        <Button android:id="@+id/btn_cos" android:text="cos" style="@style/CalculatorButtonDark"/>
 
+        <!-- 第二行 -->
         <Button android:id="@+id/btn_7" android:text="7" style="@style/CalculatorButton"/>
         <Button android:id="@+id/btn_8" android:text="8" style="@style/CalculatorButton"/>
         <Button android:id="@+id/btn_9" android:text="9" style="@style/CalculatorButton"/>
-        <Button android:id="@+id/btn_mul" android:text="×" style="@style/CalculatorButtonOrange"/>
+        <Button android:id="@+id/btn_div" android:text="÷" style="@style/CalculatorButtonOrange"/>
 
+        <!-- 第三行 -->
         <Button android:id="@+id/btn_4" android:text="4" style="@style/CalculatorButton"/>
         <Button android:id="@+id/btn_5" android:text="5" style="@style/CalculatorButton"/>
         <Button android:id="@+id/btn_6" android:text="6" style="@style/CalculatorButton"/>
-        <Button android:id="@+id/btn_minus" android:text="−" style="@style/CalculatorButtonOrange"/>
+        <Button android:id="@+id/btn_mul" android:text="×" style="@style/CalculatorButtonOrange"/>
 
+        <!-- 第四行 -->
         <Button android:id="@+id/btn_1" android:text="1" style="@style/CalculatorButton"/>
         <Button android:id="@+id/btn_2" android:text="2" style="@style/CalculatorButton"/>
         <Button android:id="@+id/btn_3" android:text="3" style="@style/CalculatorButton"/>
-        <Button android:id="@+id/btn_plus" android:text="+" style="@style/CalculatorButtonOrange"/>
+        <Button android:id="@+id/btn_minus" android:text="−" style="@style/CalculatorButtonOrange"/>
 
+        <!-- 第五行 -->
         <Button android:id="@+id/btn_0" android:text="0" 
                 style="@style/CalculatorButton" 
                 android:layout_columnSpan="2"/>
         <Button android:id="@+id/btn_dot" android:text="." style="@style/CalculatorButton"/>
-        <Button android:id="@+id/btn_equals" android:text="=" style="@style/CalculatorButtonOrange"/>
-
-        <!-- 科学计算器额外按钮行 -->
-        <Button android:id="@+id/btn_sin" android:text="sin" style="@style/CalculatorButtonDarkSmall"/>
-        <Button android:id="@+id/btn_cos" android:text="cos" style="@style/CalculatorButtonDarkSmall"/>
-        <Button android:id="@+id/btn_tan" android:text="tan" style="@style/CalculatorButtonDarkSmall"/>
-        <Button android:id="@+id/btn_pi" android:text="π" style="@style/CalculatorButtonDarkSmall"/>
+        <Button android:id="@+id/btn_plus" android:text="+" style="@style/CalculatorButtonOrange"/>
 
     </GridLayout>
 
