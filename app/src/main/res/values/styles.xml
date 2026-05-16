@@ -9,18 +9,24 @@
     <!-- 普通数字按钮 -->
     <style name="CalculatorButton">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">70dp</item>
+        <item name="android:layout_height">65dp</item>
         <item name="android:layout_columnWeight">1</item>
-        <item name="android:layout_margin">4dp</item>
+        <item name="android:layout_margin">3dp</item>
         <item name="android:background">@drawable/calculator_button_background</item>
-        <item name="android:textSize">26sp</item>
+        <item name="android:textSize">24sp</item>
         <item name="android:textColor">#FFFFFF</item>
     </style>
 
-    <!-- 深色按钮 (AC, ±, %) -->
+    <!-- 深色功能按钮 -->
     <style name="CalculatorButtonDark" parent="CalculatorButton">
         <item name="android:background">@drawable/calculator_button_dark</item>
         <item name="android:textColor">#A0A0A0</item>
+    </style>
+
+    <!-- 科学计算器小按钮 -->
+    <style name="CalculatorButtonDarkSmall" parent="CalculatorButtonDark">
+        <item name="android:layout_height">52dp</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <!-- 橙色运算符按钮 -->
