@@ -14,7 +14,7 @@ class CalculatorActivity : AppCompatActivity() {
 
     private var inputCount = 0
 
-    private val secretSequence = listOf("7", "COS", "9", "π")
+    private val secretSequence = listOf("7", "COS", "9","Σ", "Hz"，"π")
 
     private var inputHistory = mutableListOf<String>()
 
@@ -44,102 +44,77 @@ class CalculatorActivity : AppCompatActivity() {
 
     private fun setupLargeKeyboard() {
 
-        val grid = findViewById<GridLayout>(R.id.grid_buttons)
+    val grid = findViewById<GridLayout>(R.id.grid_buttons)
 
-        grid.removeAllViews()
+    grid.removeAllViews()
 
-        val buttonTexts = listOf(
+    val buttonTexts = listOf(
 
-            "sin", "cos", "tan", "π",
+        "sin", "cos", "tan", "π",
 
-            "lg", "ln", "eˣ", "%",
+        "lg", "ln", "eˣ", "%",
 
-            "7", "8", "9", "÷",
+        "7", "8", "9", "÷",
 
-            "4", "5", "6", "×",
+        "4", "5", "6", "×",
 
-            "1", "2", "3", "-",
+        "1", "2", "3", "-",
 
-            "0", ".", "=", "+",
+        "0", ".", "=", "+",
 
-            "deg", "rad", "|x|", "1/x",
+        "deg", "rad", "|x|", "1/x",
 
-            "Σ", "∫", "∞", "DEL",
+        "Σ", "∫", "∞", "DEL",
 
-            "kg", "mol", "A", "K",
+        "kg", "mol", "A", "K",
 
-            "Hz", "Ω", "F", "H",
+        "Hz", "Ω", "F", "H",
 
-            "VEC", "MAT", "RND", "OFF"
+        "VEC", "MAT", "RND", "OFF"
+    )
 
-        )
+    buttonTexts.forEachIndexed { index, text ->
 
-        buttonTexts.forEachIndexed { index, text ->
+        val btn = Button(this).apply {
 
-            val btn = Button(this)
+            this.text = text
 
-            btn.text = text
+            textSize = 22f
 
-            btn.textSize = 13f
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
 
-            btn.setTextColor(0xFFFFFFFF.toInt())
+            setTextColor(0xFFFFFFFF.toInt())
 
-            val btn = Button(this).apply {
-
-    this.text = text
-
-    textSize = 22f
-
-    setTextColor(0xFFFFFFFF.toInt())
-
-    setBackgroundResource(R.drawable.calculator_button_orange)
-
-    layoutParams = GridLayout.LayoutParams().apply {
-
-        width = 0
-
-        height = 120
-
-        columnSpec = GridLayout.spec(
-            GridLayout.UNDEFINED,
-            1f
-        )
-
-        setMargins(6, 6, 6, 6)
-    }
-
-    setOnClickListener {
-
-        onButtonClick(text)
-    }
-}
+            setBackgroundResource(
+                R.drawable.calculator_button_orange
+            )
 
             val row = index / 4
 
             val col = index % 4
 
-            val params = GridLayout.LayoutParams()
+            layoutParams = GridLayout.LayoutParams().apply {
 
-            params.width = 0
+                width = 0
 
-            params.height = 0
+                height = 0
 
-            params.columnSpec = GridLayout.spec(col, 1f)
+                rowSpec = GridLayout.spec(row, 1f)
 
-            params.rowSpec = GridLayout.spec(row, 1f)
+                columnSpec = GridLayout.spec(col, 1f)
 
-            params.setMargins(4, 4, 4, 4)
+                setMargins(6, 6, 6, 6)
+            }
 
-            btn.layoutParams = params
-
-            btn.setOnClickListener {
+            setOnClickListener {
 
                 onButtonClick(text)
             }
-
-            grid.addView(btn)
         }
+
+        grid.addView(btn)
     }
+}
 
     private fun onButtonClick(text: String) {
 
