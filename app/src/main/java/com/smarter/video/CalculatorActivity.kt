@@ -88,7 +88,7 @@ class CalculatorActivity : AppCompatActivity() {
 
     this.text = text
 
-    textSize = 16f
+    textSize = 22f
 
     setTextColor(0xFFFFFFFF.toInt())
 
