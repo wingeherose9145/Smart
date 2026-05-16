@@ -1,6 +1,6 @@
 package com.system.helper
 
-import android.app.AlertDialog
+package com.smarter.video
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
