@@ -11,7 +11,7 @@ class CalculatorActivity : AppCompatActivity() {
 
     private lateinit var display: TextView
     private var currentInput = ""
-    private val secretCode = "123456"
+    private val secretCode = "15COS9inv"   // 新密码
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,31 +27,35 @@ class CalculatorActivity : AppCompatActivity() {
             display.text = "0"
         }
 
-        findViewById<Button>(R.id.btn_equals).setOnClickListener {
-            checkSecretCode()
-        }
+        // 不再使用 = 按钮触发，改为实时检测
     }
 
     private fun setupNumberButtons() {
-        val numbers = listOf(R.id.btn_0, R.id.btn_1, R.id.btn_2, R.id.btn_3, R.id.btn_4,
-                            R.id.btn_5, R.id.btn_6, R.id.btn_7, R.id.btn_8, R.id.btn_9)
+        val numbers = listOf(
+            R.id.btn_0, R.id.btn_1, R.id.btn_2, R.id.btn_3,
+            R.id.btn_4, R.id.btn_5, R.id.btn_6, R.id.btn_7,
+            R.id.btn_8, R.id.btn_9
+        )
 
         numbers.forEach { id ->
-            findViewById<Button>(id).setOnClickListener { 
-                currentInput += (it as Button).text
+            findViewById<Button>(id).setOnClickListener { btn ->
+                currentInput += (btn as Button).text.toString()
                 display.text = currentInput
+                checkIfPasswordEntered()
             }
         }
     }
 
     private fun setupOperatorButtons() {
-        val ops = mapOf(
-            R.id.btn_plus to "+", R.id.btn_minus to "−",
-            R.id.btn_mul to "×", R.id.btn_div to "÷",
-            R.id.btn_dot to ".", R.id.btn_percent to "%"
+        val operators = mapOf(
+            R.id.btn_plus to "+", 
+            R.id.btn_minus to "−",
+            R.id.btn_mul to "×", 
+            R.id.btn_div to "÷",
+            R.id.btn_dot to "."
         )
 
-        ops.forEach { (id, symbol) ->
+        operators.forEach { (id, symbol) ->
             findViewById<Button>(id).setOnClickListener {
                 if (currentInput.isNotEmpty()) {
                     currentInput += symbol
@@ -60,26 +64,25 @@ class CalculatorActivity : AppCompatActivity() {
             }
         }
 
-        // 科学按钮仅显示
-        listOf(R.id.btn_sin, R.id.btn_cos, R.id.btn_tan, R.id.btn_pi).forEach { id ->
-            findViewById<Button>(id).setOnClickListener {
+        // 科学按钮仅显示效果
+        listOf(R.id.btn_inv, R.id.btn_sin, R.id.btn_cos).forEach { id ->
+            findViewById<Button>(id)?.setOnClickListener {
                 Toast.makeText(this, "功能开发中...", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun checkSecretCode() {
-        if (currentInput == secretCode) {
+    // 实时检测密码
+    private fun checkIfPasswordEntered() {
+        if (currentInput.contains(secretCode)) {
             enterRealPlayer()
-        } else {
-            Toast.makeText(this, "计算结果: $currentInput", Toast.LENGTH_SHORT).show()
-            currentInput = ""
-            display.text = "0"
         }
     }
 
     private fun enterRealPlayer() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
+        currentInput = ""   // 重置
+        display.text = "0"
     }
 }
