@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F5F5F5"
+    android:padding="16dp">
+
+    <!-- 显示屏 -->
+    <TextView
+        android:id="@+id/tv_display"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:background="#FFFFFF"
+        android:gravity="end|bottom"
+        android:padding="24dp"
+        android:text="0"
+        android:textSize="48sp"
+        android:textColor="#1E1E1E"
+        android:textStyle="bold" />
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="4"
+        android:rowCount="5"
+        android:layout_marginTop="32dp"
+        android:alignmentMode="alignMargins">
+
+        <!-- 第一行 -->
+        <Button android:id="@+id/btn_7" android:text="7" style="@style/CalculatorButton"/>
+        <Button android:id="@+id/btn_8" android:text="8" style="@style/CalculatorButton"/>
+        <Button android:id="@+id/btn_9" android:text="9" style="@style/CalculatorButton"/>
+        <Button android:id="@+id/btn_clear" android:text="C" style="@style/CalculatorButton"/>
+
+        <!-- 第二行 -->
+        <Button android:id="@+id/btn_4" android:text="4" style="@style/CalculatorButton"/>
+        <Button android:id="@+id/btn_5" android:text="5" style="@style/CalculatorButton"/>
+        <Button android:id="@+id/btn_6" android:text="6" style="@style/CalculatorButton"/>
+        <Button android:id="@+id/btn_div" android:text="÷" style="@style/CalculatorButton"/>
+
+        <!-- 第三行 -->
+        <Button android:id="@+id/btn_1" android:text="1" style="@style/CalculatorButton"/>
+        <Button android:id="@+id/btn_2" android:text="2" style="@style/CalculatorButton"/>
+        <Button android:id="@+id/btn_3" android:text="3" style="@style/CalculatorButton"/>
+        <Button android:id="@+id/btn_mul" android:text="×" style="@style/CalculatorButton"/>
+
+        <!-- 第四行 -->
+        <Button android:id="@+id/btn_0" android:text="0" style="@style/CalculatorButton"/>
+        <Button android:id="@+id/btn_dot" android:text="." style="@style/CalculatorButton"/>
+        <Button android:id="@+id/btn_equals" android:text="=" style="@style/CalculatorButton"/>
+        <Button android:id="@+id/btn_minus" android:text="-" style="@style/CalculatorButton"/>
+
+    </GridLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="长按屏幕可直接进入"
+        android:textAlignment="center"
+        android:textSize="12sp"
+        android:textColor="#888888"
+        android:layout_marginTop="32dp"/>
+
+</LinearLayout>
