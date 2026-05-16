@@ -70,7 +70,37 @@ class CalculatorActivity : AppCompatActivity() {
             R.id.btnPi,
             R.id.btnSqrt,
             R.id.btnPow,
-            R.id.btnFact
+            R.id.btnFact，
+
+            R.id.btnLg,
+            R.id.btnLn,
+            R.id.btnExp,
+            R.id.btnMod,
+
+            R.id.btnDeg,
+            R.id.btnRad,
+            R.id.btnAbs,
+            R.id.btnInv,
+
+            R.id.btnSum,
+            R.id.btnInt,
+            R.id.btnInf,
+            R.id.btnDel,
+
+            R.id.btnKg,
+            R.id.btnMol,
+            R.id.btnAmp,
+            R.id.btnKel,
+
+            R.id.btnHz,
+            R.id.btnOhm,
+            R.id.btnFar,
+            R.id.btnHen,
+
+            R.id.btnVec,
+            R.id.btnMat,
+            R.id.btnRnd,
+            R.id.btnOff
         )
 
         buttons.forEach { id ->
