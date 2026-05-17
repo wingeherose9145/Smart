@@ -27,7 +27,7 @@
         android:layout_weight="1"
         android:columnCount="4"
         android:rowCount="12"
-        android:useDefaultMargins="true">
+        android:padding="8dp"/>
 
     </GridLayout>
 
