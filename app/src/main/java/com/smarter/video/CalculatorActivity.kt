@@ -22,6 +22,15 @@ class CalculatorActivity : AppCompatActivity() {
     // 最近输入层级
     private val recentLayers = mutableListOf<Int>()
 
+    // 动态内容库
+    private lateinit var quotesA: List<String>
+    private lateinit var quotesB: List<String>
+    private lateinit var quotesC: List<String>
+    private lateinit var quotesD: List<String>
+    private lateinit var quotesE: List<String>
+    private lateinit var quotesF: List<String>
+    private lateinit var quotesG: List<String>
+
     // 隐藏入口序列
     private val secretSequence = listOf(
         "LG",
@@ -29,62 +38,6 @@ class CalculatorActivity : AppCompatActivity() {
         "COS",
         "∞",
         "Ω"
-    )
-
-    // ===== A 内容 =====
-    private val quotesA = listOf(
-        "基础函数",
-        "sin(x)",
-        "cos(x)",
-        "π ≈ 3.1416"
-    )
-
-    // ===== B 内容 =====
-    private val quotesB = listOf(
-        "数字计算",
-        "E = mc²",
-        "7 × 8 = 56",
-        "普通运算"
-    )
-
-    // ===== C 内容 =====
-    private val quotesC = listOf(
-        "高级模式",
-        "矩阵运算",
-        "向量分析",
-        "∂/∂x"
-    )
-
-    // ===== D 内容 =====
-    private val quotesD = listOf(
-        "函数+数字",
-        "混合运算",
-        "工程模式",
-        "Hybrid A"
-    )
-
-    // ===== E 内容 =====
-    private val quotesE = listOf(
-        "符号+高级",
-        "隐藏模式",
-        "分析系统",
-        "Hybrid B"
-    )
-
-    // ===== F 内容 =====
-    private val quotesF = listOf(
-        "数字+高级",
-        "高级计算",
-        "实验功能",
-        "Hybrid C"
-    )
-
-    // ===== G 内容 =====
-    private val quotesG = listOf(
-        "完全模式",
-        "ALL SYSTEM",
-        "科学核心",
-        "Ultimate"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,7 +54,32 @@ class CalculatorActivity : AppCompatActivity() {
 
         display = findViewById(R.id.tv_display)
 
+        // 加载内容库
+        quotesA = loadQuotes("a.txt")
+        quotesB = loadQuotes("b.txt")
+        quotesC = loadQuotes("c.txt")
+        quotesD = loadQuotes("d.txt")
+        quotesE = loadQuotes("e.txt")
+        quotesF = loadQuotes("f.txt")
+        quotesG = loadQuotes("g.txt")
+
         setupLargeKeyboard()
+    }
+
+    // 读取 assets 内容库
+    private fun loadQuotes(fileName: String): List<String> {
+
+        return try {
+
+            assets.open(fileName)
+                .bufferedReader()
+                .readLines()
+                .filter { it.isNotBlank() }
+
+        } catch (e: Exception) {
+
+            listOf("LOAD ERROR")
+        }
     }
 
     private fun setupLargeKeyboard() {
@@ -151,7 +129,7 @@ class CalculatorActivity : AppCompatActivity() {
 
                 typeface = Typeface.DEFAULT_BOLD
 
-                // 按钮文字改黑色
+                // 黑色按钮文字
                 setTextColor(0xFF000000.toInt())
 
                 setBackgroundResource(
