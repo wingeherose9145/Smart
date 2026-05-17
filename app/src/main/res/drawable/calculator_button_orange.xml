@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#FF9500" />
-    <corners android:radius="12dp" />
+
+    <!-- 毛玻璃浅蓝背景 -->
+    <solid android:color="#66BEEBFF"/>
+
+    <!-- 圆角 -->
+    <corners android:radius="22dp"/>
+
+    <!-- 半透明白色边框 -->
+    <stroke
+        android:width="1.5dp"
+        android:color="#99FFFFFF"/>
+
+    <!-- 内边距 -->
+    <padding
+        android:left="8dp"
+        android:top="8dp"
+        android:right="8dp"
+        android:bottom="8dp"/>
+
 </shape>
