@@ -1,0 +1,5 @@
+E = mc²
+F = ma
+Entropy++
+Quantum State
+Photon Drift
