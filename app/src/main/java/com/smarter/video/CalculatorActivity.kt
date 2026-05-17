@@ -132,6 +132,7 @@ class CalculatorActivity : AppCompatActivity() {
                 // 黑色按钮文字
                 setTextColor(0xFF000000.toInt())
 
+                // 天蓝色按钮背景
                 setBackgroundResource(
                     R.drawable.calculator_button_orange
                 )
@@ -192,11 +193,6 @@ class CalculatorActivity : AppCompatActivity() {
             recentLayers.removeAt(0)
         }
 
-        // 最多保留最近15次输入
-        if (inputHistory.size > 15) {
-            inputHistory.removeAt(0)
-        }
-
         // 每3次触发一次
         if (inputCount % 3 == 0) {
 
@@ -220,6 +216,11 @@ class CalculatorActivity : AppCompatActivity() {
 
                 else -> "NULL"
             }
+
+            // 清空上一轮输入
+            inputHistory.clear()
+
+            recentLayers.clear()
 
         } else {
 
