@@ -5,14 +5,30 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- 深色圆形背景 -->
+    <!-- 计算器深色机身 -->
     <path
-        android:fillColor="#1E1E1E"
-        android:pathData="M54,54 m-48,0 a48,48 0,1 1,96 0 a48,48 0,1 1,-96 0" />
+        android:fillColor="#1C1C1E"
+        android:pathData="M24,20 h60 v68 h-60 z" />
 
-    <!-- 白色三角播放符号 -->
+    <!-- 计算器屏幕 -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M40,35 L40,73 L78,54 Z" />
+        android:fillColor="#2ECC71"
+        android:pathData="M30,28 h48 v18 h-48 z" />
+
+    <!-- 屏幕上的假数字 -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M35,34 h8 v4 h-8 z M48,34 h8 v4 h-8 z M61,34 h8 v4 h-8 z" />
+
+    <!-- 计算器按钮区域 -->
+    <path
+        android:fillColor="#2C2C2E"
+        android:pathData="M30,52 h48 v30 h-48 z" />
+
+    <!-- 按钮分割线 -->
+    <path
+        android:strokeColor="#1C1C1E"
+        android:strokeWidth="3"
+        android:pathData="M30,60 h48 M30,68 h48 M42,52 v30 M54,52 v30 M66,52 v30" />
 
 </vector>
