@@ -1,12 +1,9 @@
 package com.smarter.video
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
@@ -14,7 +11,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
@@ -28,24 +24,41 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: ArrayAdapter<String>
     private lateinit var addButton: Button
 
-    private val requestPermission = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        if (permissions.all { it.value }) {
-            loadAllVideos()
-        } else {
-            Toast.makeText(this, "需要权限才能读取视频", Toast.LENGTH_LONG).show()
+    // 🌟 核心改进 1：利用系统原生选择器，无需任何高危存储权限，支持多选
+    private val pickVideosLauncher = registerForActivityResult(
+        ActivityResultContracts.GetMultipleContents()
+    ) { uris: List<Uri> ->
+        if (uris.isNotEmpty()) {
+            Toast.makeText(this, "正在后台导入选中的 ${uris.size} 个视频，请稍候...", Toast.LENGTH_SHORT).show()
+
+            // 🌟 核心改进 2：开辟子线程进行文件拷贝，防止主线程卡死（ANR）
+            Thread {
+                var addedCount = 0
+                uris.forEach { sourceUri ->
+                    val name = getFileNameFromUri(sourceUri)
+                    val internalUri = copyVideoToInternalStorage(sourceUri, name)
+                    if (internalUri != null) {
+                        runOnUiThread {
+                            videoUris.add(internalUri)
+                            displayNames.add(name)
+                        }
+                        addedCount++
+                    }
+                }
+                // 拷贝完成后回归主线程刷新UI并保存
+                runOnUiThread {
+                    adapter.notifyDataSetChanged()
+                    saveVideoList()
+                    Toast.makeText(this, "成功导入 $addedCount 个视频！", Toast.LENGTH_SHORT).show()
+                }
+            }.start()
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        if (hasSavedVideoList()) {
-            startRandomPlayback()
-            return
-        }
-
+        
+        // 🌟 核心改进 3：取消原先 onCreate 里的直接重定向拦截，允许进入主界面管理视频
         setContentView(R.layout.activity_main)
 
         listView = findViewById(R.id.videoListView)
@@ -55,22 +68,31 @@ class MainActivity : AppCompatActivity() {
         listView.adapter = adapter
 
         addButton.text = "添加视频"
-        addButton.setOnClickListener { addVideos() }
+        addButton.setOnClickListener { 
+            // 直接拉起系统视频选择器
+            pickVideosLauncher.launch("video/*") 
+        }
 
+        // 点击列表中的任意视频开始播放
         listView.setOnItemClickListener { _, _, position, _ ->
             startPlayerActivity(position)
         }
 
+        // 长按删除视频
         listView.setOnItemLongClickListener { _, _, position, _ ->
             if (position >= 0 && position < videoUris.size) {
                 AlertDialog.Builder(this)
-                    .setTitle("删除")
-                    .setMessage("从列表中移除？")
+                    .setTitle("删除视频")
+                    .setMessage("确认要从播放列表中移除该视频吗？")
                     .setPositiveButton("移除") { _, _ ->
+                        // 🌟 核心改进 4：顺便删除内部存储中的物理文件，防止流氓占用手机空间
+                        deleteInternalFile(videoUris[position])
+                        
                         videoUris.removeAt(position)
                         displayNames.removeAt(position)
                         adapter.notifyDataSetChanged()
                         saveVideoList()
+                        Toast.makeText(this, "已移除", Toast.LENGTH_SHORT).show()
                     }
                     .setNegativeButton("取消", null)
                     .show()
@@ -78,58 +100,20 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        loadSavedListOrRefresh()
+        // 页面打开时自动加载之前保存过的视频
+        loadSavedVideoList()
     }
 
-    private fun addVideos() {
-        if (hasPermission()) {
-            loadAllVideos()
-        } else {
-            requestPermission()
-        }
-    }
-
-    private fun loadAllVideos() {
-        videoUris.clear()
-        displayNames.clear()
-
-        val projection = arrayOf(MediaStore.Video.Media._ID, MediaStore.Video.Media.DISPLAY_NAME)
-
-        contentResolver.query(
-            MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-            projection,
-            null,
-            null,
-            "${MediaStore.Video.Media.DATE_ADDED} DESC"
-        )?.use { cursor ->
-            val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID)
-            val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)
-
-            while (cursor.moveToNext()) {
-                val id = cursor.getLong(idColumn)
-                val name = cursor.getString(nameColumn) ?: "未知视频"
-                val sourceUri = Uri.withAppendedPath(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id.toString())
-
-                val internalUri = copyVideoToInternalStorage(sourceUri, name)
-                if (internalUri != null) {
-                    videoUris.add(internalUri)
-                    displayNames.add(name)
-                }
-            }
-        }
-
-        adapter.notifyDataSetChanged()
-        saveVideoList()
-
-        Toast.makeText(this, "已添加 ${displayNames.size} 个视频（已复制到内部）", Toast.LENGTH_SHORT).show()
-    }
-
+    // 异步安全地将视频复制到App私有目录
     private fun copyVideoToInternalStorage(sourceUri: Uri, fileName: String): Uri? {
         return try {
             val inputStream = contentResolver.openInputStream(sourceUri) ?: return null
             val videosDir = File(getExternalFilesDir(null), "videos")
-            videosDir.mkdirs()
+            if (!videosDir.exists()) {
+                videosDir.mkdirs()
+            }
 
+            // 使用时间戳防止重名冲突
             val targetFile = File(videosDir, "${System.currentTimeMillis()}_$fileName")
 
             FileOutputStream(targetFile).use { output ->
@@ -144,33 +128,42 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun hasPermission(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED
-        } else {
-            true
+    // 从内容提供者中解析出选中的视频真实文件名
+    private fun getFileNameFromUri(uri: Uri): String {
+        var name = "视频_${System.currentTimeMillis()}.mp4"
+        try {
+            contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (nameIndex != -1 && cursor.moveToFirst()) {
+                    val displayName = cursor.getString(nameIndex)
+                    if (!displayName.isNullOrBlank()) {
+                        name = displayName
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return name
+    }
+
+    // 物理删除拷贝到内部的视频文件
+    private fun deleteInternalFile(uri: Uri) {
+        try {
+            if (uri.scheme == "file") {
+                uri.path?.let { path ->
+                    val file = File(path)
+                    if (file.exists()) {
+                        file.delete()
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
-    private fun requestPermission() {
-        val perms = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arrayOf(Manifest.permission.READ_MEDIA_VIDEO)
-        } else {
-            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
-        requestPermission.launch(perms)
-    }
-
-    private fun loadSavedListOrRefresh() {
-        if (loadSavedVideoList()) {
-            Toast.makeText(this, "已恢复 ${displayNames.size} 个视频", Toast.LENGTH_SHORT).show()
-        } else if (hasPermission()) {
-            loadAllVideos()
-        } else {
-            requestPermission()
-        }
-    }
-
+    // 保存列表到本地
     private fun saveVideoList() {
         val prefs = getSharedPreferences("video_list", MODE_PRIVATE)
         val editor = prefs.edit()
@@ -179,6 +172,7 @@ class MainActivity : AppCompatActivity() {
         editor.apply()
     }
 
+    // 读取本地保存的列表
     private fun loadSavedVideoList(): Boolean {
         val prefs = getSharedPreferences("video_list", MODE_PRIVATE)
         val uriJson = prefs.getString("uris", null) ?: return false
@@ -197,12 +191,13 @@ class MainActivity : AppCompatActivity() {
             displayNames.addAll(savedNames)
 
             adapter.notifyDataSetChanged()
-            return true
+            true
         } catch (e: Exception) {
             false
         }
     }
 
+    // 唤起播放器Activity
     private fun startPlayerActivity(position: Int) {
         val intent = Intent(this, PlayerActivity::class.java).apply {
             putExtra("video_uri", videoUris[position].toString())
@@ -210,27 +205,5 @@ class MainActivity : AppCompatActivity() {
             putStringArrayListExtra("video_list", ArrayList(videoUris.map { it.toString() }))
         }
         startActivity(intent)
-    }
-
-    private fun hasSavedVideoList(): Boolean {
-        val prefs = getSharedPreferences("video_list", MODE_PRIVATE)
-        return prefs.contains("uris")
-    }
-
-    private fun startRandomPlayback() {
-        val intent = Intent(this, PlayerActivity::class.java)
-        intent.putStringArrayListExtra("video_list", ArrayList(loadSavedUris()))
-        startActivity(intent)
-        finish()
-    }
-
-    private fun loadSavedUris(): List<String> {
-        val prefs = getSharedPreferences("video_list", MODE_PRIVATE)
-        val json = prefs.getString("uris", null) ?: return emptyList()
-        return try {
-            Gson().fromJson(json, object : TypeToken<List<String>>() {}.type)
-        } catch (e: Exception) {
-            emptyList()
-        }
     }
 }
