@@ -5,23 +5,14 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- 深色背景 -->
-    <path android:fillColor="#111111" android:pathData="M0,0 h108 v108 h-108 z"/>
+    <!-- 深黑圆形背景 -->
+    <path
+        android:fillColor="#0F0F0F"
+        android:pathData="M54,54 m-46,0 a46,46 0,1 1,92 0 a46,46 0,1 1,-92 0" />
 
-    <!-- ∡R -->
-    <path android:fillColor="#FFFFFF" android:pathData="M25,32 L25,40 L38,40 L38,32 Z"/>
-    <path android:fillColor="#FFFFFF" android:pathData="M29,32 L35,38"/>
-
-    <!-- φ -->
-    <path android:fillColor="#FFFFFF" android:pathData="M55,30 L55,42 L70,42 L70,30 Z"/>
-    <path android:fillColor="#111111" android:pathData="M60,33 L65,39"/>
-
-    <!-- % -->
-    <path android:fillColor="#FFFFFF" android:pathData="M25,55 L25,65 L40,65 L40,55 Z"/>
-    <path android:fillColor="#111111" android:pathData="M29,58 L36,62"/>
-
-    <!-- |x| -->
-    <path android:fillColor="#FFFFFF" android:pathData="M55,55 L55,65 L70,65 L70,55 Z"/>
-    <path android:fillColor="#111111" android:pathData="M59,57 L59,63 M66,57 L66,63"/>
+    <!-- 白色播放三角形 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M42,38 L42,70 L78,54 Z" />
 
 </vector>
