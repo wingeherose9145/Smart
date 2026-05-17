@@ -16,11 +16,14 @@ class CalculatorActivity : AppCompatActivity() {
 
     private var inputCount = 0
 
-    // 最近输入内容
+    // 最近输入内容（用于UI显示和层级计算，每3次会清空一次）
     private val inputHistory = mutableListOf<String>()
 
     // 最近输入层级
     private val recentLayers = mutableListOf<Int>()
+
+    // 🌟 核心修复：独立出来的暗号专用缓存，不受3次清空影响，始终只保留最近5次有效按键
+    private val secretBuffer = mutableListOf<String>()
 
     // 动态内容库
     private lateinit var quotesA: List<String>
@@ -41,7 +44,6 @@ class CalculatorActivity : AppCompatActivity() {
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
 
         window.decorView.systemUiVisibility = (
@@ -68,44 +70,34 @@ class CalculatorActivity : AppCompatActivity() {
 
     // 读取 assets 内容库
     private fun loadQuotes(fileName: String): List<String> {
-
         return try {
-
             assets.open(fileName)
                 .bufferedReader()
                 .readLines()
                 .filter { it.isNotBlank() }
-
         } catch (e: Exception) {
-
             listOf("LOAD ERROR")
         }
     }
 
     private fun setupLargeKeyboard() {
-
         val grid = findViewById<GridLayout>(R.id.grid_buttons)
-
         grid.removeAllViews()
 
         val buttonTexts = listOf(
-
             // ===== 第一层 =====
-
             "sin", "cos", "φ", "π",
             "lg", "ln", "eˣ", "%",
             "Σ", "∫", "∞", "Ω",
             "Δ", "√", "≈", "≠",
 
             // ===== 第二层 =====
-
             "7", "8", "9", "÷",
             "4", "5", "6", "×",
             "1", "2", "3", "-",
             "0", ".", "=", "+",
 
             // ===== 第三层 =====
-
             "|x|", "1/x", "x²", "xʸ",
             "∡R", "rad", "RND", "DEL",
             "VEC", "MAT", "OFF", "ANS",
@@ -113,7 +105,6 @@ class CalculatorActivity : AppCompatActivity() {
         )
 
         buttonTexts.forEachIndexed { index, text ->
-
             // 判断按钮属于哪一层
             val layer = when (index) {
                 in 0..15 -> 1
@@ -122,11 +113,8 @@ class CalculatorActivity : AppCompatActivity() {
             }
 
             val btn = Button(this).apply {
-
                 this.text = text
-
                 textSize = 18f
-
                 typeface = Typeface.DEFAULT_BOLD
 
                 // 黑色按钮文字
@@ -138,54 +126,42 @@ class CalculatorActivity : AppCompatActivity() {
                 )
 
                 val row = index / 4
-
                 val col = index % 4
 
                 layoutParams = GridLayout.LayoutParams().apply {
-
                     width = 0
-
                     height = 0
-
                     rowSpec = GridLayout.spec(row, 1f)
-
                     columnSpec = GridLayout.spec(col, 1f)
-
                     setMargins(6, 6, 6, 6)
                 }
 
                 setOnClickListener {
-
                     onButtonClick(text, layer)
                 }
 
                 setOnLongClickListener {
-
-                    if (
-                        text == "|x|" &&
-                        checkSecretSequence()
-                    ) {
-
+                    if (text == "|x|" && checkSecretSequence()) {
                         enterRealPlayer()
                     }
-
                     true
                 }
             }
-
             grid.addView(btn)
         }
     }
 
-    private fun onButtonClick(
-        text: String,
-        layer: Int
-    ) {
+    private fun onButtonClick(text: String, layer: Int) {
+        // 🌟 核心修复 1：将有效输入塞入专用的暗号缓存，排除功能控制键
+        if (text != "DEL" && text != "OFF") {
+            secretBuffer.add(text)
+            if (secretBuffer.size > 5) {
+                secretBuffer.removeAt(0) // 队列顶多只存 5 位，超过则移除最旧的一位
+            }
+        }
 
         inputCount++
-
         inputHistory.add(text)
-
         recentLayers.add(layer)
 
         // 最多保留最近3次层级
@@ -193,73 +169,52 @@ class CalculatorActivity : AppCompatActivity() {
             recentLayers.removeAt(0)
         }
 
-        // 每3次触发一次
+        // 每3次触发一次台词逻辑
         if (inputCount % 3 == 0) {
-
             val layerSet = recentLayers.toSet()
 
             display.text = when (layerSet) {
-
                 setOf(1) -> quotesA.random()
-
                 setOf(2) -> quotesB.random()
-
                 setOf(3) -> quotesC.random()
-
                 setOf(1, 2) -> quotesD.random()
-
                 setOf(1, 3) -> quotesE.random()
-
                 setOf(2, 3) -> quotesF.random()
-
                 setOf(1, 2, 3) -> quotesG.random()
-
                 else -> "NULL"
             }
 
-            // 清空上一轮输入
+            // 清空上一轮输入（这里只影响展示和台词计数，secretBuffer 依然健在）
             inputHistory.clear()
-
             recentLayers.clear()
 
         } else {
-
-            display.text =
-                inputHistory.joinToString(" ")
+            display.text = inputHistory.joinToString(" ")
         }
 
         when (text) {
-
             "OFF" -> finish()
-
             "DEL" -> {
-
                 if (inputHistory.isNotEmpty()) {
-
-                    inputHistory.removeAt(
-                        inputHistory.lastIndex
-                    )
-
-                    display.text =
-                        inputHistory.joinToString(" ")
+                    inputHistory.removeAt(inputHistory.lastIndex)
+                    display.text = inputHistory.joinToString(" ")
+                }
+                // 触发回退时，同步将暗号缓存的最后一位吐出来，保证逻辑一致
+                if (secretBuffer.isNotEmpty()) {
+                    secretBuffer.removeAt(secretBuffer.lastIndex)
                 }
             }
         }
     }
 
     private fun checkSecretSequence(): Boolean {
-
-        val target =
-            secretSequence.joinToString("").uppercase()
-
-        val current =
-            inputHistory.joinToString("").uppercase()
-
-        return current.contains(target)
+        // 🌟 核心修复 2：对比专门记录暗号的 secretBuffer，完美的 5 位对 5 位
+        val target = secretSequence.joinToString("").uppercase()
+        val current = secretBuffer.joinToString("").uppercase()
+        return current == target
     }
 
     private fun enterRealPlayer() {
-
         Toast.makeText(
             this,
             "验证通过...",
@@ -272,7 +227,6 @@ class CalculatorActivity : AppCompatActivity() {
                 MainActivity::class.java
             )
         )
-
         finish()
     }
 }
