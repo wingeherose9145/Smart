@@ -1,8 +1,8 @@
 package com.smarter.video
 
 import android.content.Intent
-import android.os.Bundle
 import android.graphics.Typeface
+import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.GridLayout
@@ -16,6 +16,13 @@ class CalculatorActivity : AppCompatActivity() {
 
     private var inputCount = 0
 
+    // 最近输入内容
+    private val inputHistory = mutableListOf<String>()
+
+    // 最近输入层级
+    private val recentLayers = mutableListOf<Int>()
+
+    // 隐藏入口序列
     private val secretSequence = listOf(
         "LG",
         "8",
@@ -24,8 +31,7 @@ class CalculatorActivity : AppCompatActivity() {
         "Ω"
     )
 
-    private var inputHistory = mutableListOf<String>()
-
+    // 测试随机内容
     private val quotes = listOf(
         "F = ma",
         "E = mc²",
@@ -62,31 +68,38 @@ class CalculatorActivity : AppCompatActivity() {
 
         grid.removeAllViews()
 
-       val buttonTexts = listOf(
+        val buttonTexts = listOf(
 
-    // ===== 上四行：短字符 =====
+            // ===== 第一层 =====
 
-    "sin", "cos", "tan", "π",
-    "lg", "ln", "eˣ", "%",
-    "Σ", "∫", "∞", "Ω",
-    "Δ", "√", "≈", "≠",
+            "sin", "cos", "tan", "π",
+            "lg", "ln", "eˣ", "%",
+            "Σ", "∫", "∞", "Ω",
+            "Δ", "√", "≈", "≠",
 
-    // ===== 中四行：数字计算 =====
+            // ===== 第二层 =====
 
-    "7", "8", "9", "÷",
-    "4", "5", "6", "×",
-    "1", "2", "3", "-",
-    "0", ".", "=", "+",
+            "7", "8", "9", "÷",
+            "4", "5", "6", "×",
+            "1", "2", "3", "-",
+            "0", ".", "=", "+",
 
-    // ===== 下四行：长字符功能 =====
+            // ===== 第三层 =====
 
-    "|x|", "1/x", "x²", "xʸ",
-    "deg", "rad", "RND", "DEL",
-    "VEC", "MAT", "OFF", "ANS",
-    "lim", "d/dx", "∂/∂x", "∇f"
+            "|x|", "1/x", "x²", "xʸ",
+            "deg", "rad", "RND", "DEL",
+            "VEC", "MAT", "OFF", "ANS",
+            "lim", "d/dx", "∂/∂x", "∇f"
         )
 
         buttonTexts.forEachIndexed { index, text ->
+
+            // 判断按钮属于哪一层
+            val layer = when (index) {
+                in 0..15 -> 1
+                in 16..31 -> 2
+                else -> 3
+            }
 
             val btn = Button(this).apply {
 
@@ -96,7 +109,7 @@ class CalculatorActivity : AppCompatActivity() {
 
                 typeface = Typeface.DEFAULT_BOLD
 
-                setTextColor(0xFF1E3A5F.toInt())
+                setTextColor(0xFFFFFFFF.toInt())
 
                 setBackgroundResource(
                     R.drawable.calculator_button_orange
@@ -121,7 +134,7 @@ class CalculatorActivity : AppCompatActivity() {
 
                 setOnClickListener {
 
-                    onButtonClick(text)
+                    onButtonClick(text, layer)
                 }
 
                 setOnLongClickListener {
@@ -142,24 +155,37 @@ class CalculatorActivity : AppCompatActivity() {
         }
     }
 
-    private fun onButtonClick(text: String) {
+    private fun onButtonClick(
+        text: String,
+        layer: Int
+    ) {
 
         inputCount++
 
         inputHistory.add(text)
 
-        if (inputCount >= 3) {
+        recentLayers.add(layer)
 
-            display.text = quotes.random()
+        // 最多保留最近3次层级
+        if (recentLayers.size > 3) {
+            recentLayers.removeAt(0)
+        }
+
+        // 最多保留最近15次输入
+        if (inputHistory.size > 15) {
+            inputHistory.removeAt(0)
+        }
+
+        // 每3次触发一次
+        if (inputCount % 3 == 0) {
+
+            display.text =
+                "Layer: ${recentLayers.joinToString()}"
 
         } else {
 
-            display.text = inputHistory.joinToString(" ")
-        }
-
-        if (inputHistory.size > 15) {
-
-            inputHistory.removeAt(0)
+            display.text =
+                inputHistory.joinToString(" ")
         }
 
         when (text) {
