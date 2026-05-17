@@ -7,18 +7,18 @@
 
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M41,41 h10 L46,50 Z M43.5,42.5 L46,47 L48.5,42.5 Z"/>
+        android:pathData="M31,27 h15 L38.5,41 Z M35,29 L38.5,37 L42,29 Z"/>
 
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M62,41 L67,50 h-10 Z M62,43.5 L59.5,48.5 h5 Z"/>
+        android:pathData="M69.5,27 L77,41 h-15 Z M69.5,31 L66,38.5 h7 Z"/>
 
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M51,57 h-10 L45,61 L41,65 h10 v1.5 h-12 v-1 L44,61 L39,58.5 v-1.5 Z"/>
+        android:pathData="M47,65 h-15 L38,71 L32,77 h15 v2 h-18 v-1 L36.5,71 L30,67.5 v-2.5 Z"/>
 
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M58,57 h11 v1 h-1 v7.5 h-1 v-7.5 h-6.5 v-1.5 Z"/>
+        android:pathData="M60,65 h16.5 v1.5 h-1.5 v11 h-1.5 v-11 h-10 v-1.5 Z"/>
         
 </vector>
