@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#EAF7FF"
+    android:background="#000000"
     android:padding="8dp">
 
     <!-- 显示区域 -->
@@ -16,7 +16,7 @@
         android:gravity="center_vertical|end"
         android:text="0"
         android:textSize="28sp"
-        android:textColor="#1E3A5F"
+        android:textColor="#FFFFFF"
         android:padding="16dp"
         android:background="#66FFFFFF" />
 
