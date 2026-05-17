@@ -13,13 +13,26 @@
         android:id="@+id/tv_display"
         android:layout_width="match_parent"
         android:layout_height="120dp"
-        android:gravity="center_vertical|end"
-        android:text="0"
-        android:textSize="28sp"
-        android:textColor="#FFFFFF"
-        android:padding="16dp"
-        android:background="#66FFFFFF" />
 
+        android:gravity="center"
+
+        android:text="0"
+        android:textSize="26sp"
+        android:textColor="#FFFFFF"
+
+        android:padding="16dp"
+
+        android:maxLines="2"
+
+    android:ellipsize="end"
+
+    android:lineSpacingExtra="6dp"
+
+    android:breakStrategy="balanced"
+
+    android:textAlignment="center"
+
+    android:background="#22000000"/>
     <!-- 按钮区域 -->
 
     <GridLayout
