@@ -6,28 +6,12 @@
     android:viewportHeight="108">
 
     <!-- 深色背景 -->
-    <path android:fillColor="#1A1A1A" android:pathData="M0,0 h108 v108 h-108 z"/>
+    <path android:fillColor="#111111" android:pathData="M0,0 h108 v108 h-108 z"/>
 
-    <!-- 计算器屏幕（灰白色，宽度适中，居中） -->
-    <path 
-        android:fillColor="#E8E8E8" 
-        android:pathData="M22,24 h64 v26 a6,6 0 0 1 -6,6 H28 a6,6 0 0 1 -6,-6 Z"/>
-
-    <!-- "工程计算" 文字（模拟） -->
-    <path android:fillColor="#1F1F1F" android:pathData="M30,31 L30,37 L78,37 L78,31 Z" />
-
-    <!-- 计算器机身 -->
-    <path android:fillColor="#2C2C2E" android:pathData="M20,58 h68 v32 a8,8 0 0 1 -8,8 H28 a8,8 0 0 1 -8,-8 Z"/>
-
-    <!-- 6个淡橙色按钮 -->
-    <!-- 第一行 -->
-    <path android:fillColor="#FFAB5E" android:pathData="M27,63 h12 v8 a2,2 0 0 1 -2,2 H29 a2,2 0 0 1 -2,-2 Z"/>
-    <path android:fillColor="#FFAB5E" android:pathData="M43,63 h12 v8 a2,2 0 0 1 -2,2 H45 a2,2 0 0 1 -2,-2 Z"/>
-    <path android:fillColor="#FFAB5E" android:pathData="M59,63 h12 v8 a2,2 0 0 1 -2,2 H61 a2,2 0 0 1 -2,-2 Z"/>
-
-    <!-- 第二行 -->
-    <path android:fillColor="#FFAB5E" android:pathData="M27,75 h12 v8 a2,2 0 0 1 -2,2 H29 a2,2 0 0 1 -2,-2 Z"/>
-    <path android:fillColor="#FFAB5E" android:pathData="M43,75 h12 v8 a2,2 0 0 1 -2,2 H45 a2,2 0 0 1 -2,-2 Z"/>
-    <path android:fillColor="#FFAB5E" android:pathData="M59,75 h12 v8 a2,2 0 0 1 -2,2 H61 a2,2 0 0 1 -2,-2 Z"/>
+    <!-- 四个字符（居中排布） -->
+    <text android:x="54" android:y="35" android:text="角度" android:fontSize="9.5" android:textColor="#FFFFFF" android:textAlign="center"/>
+    <text android:x="54" android:y="48" android:text="直径" android:fontSize="9.5" android:textColor="#FFFFFF" android:textAlign="center"/>
+    <text android:x="54" android:y="61" android:text="百分比" android:fontSize="9.5" android:textColor="#FFFFFF" android:textAlign="center"/>
+    <text android:x="54" android:y="74" android:text="绝对值" android:fontSize="9.5" android:textColor="#FFFFFF" android:textAlign="center"/>
 
 </vector>
