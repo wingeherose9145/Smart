@@ -31,18 +31,60 @@ class CalculatorActivity : AppCompatActivity() {
         "Ω"
     )
 
-    // 测试随机内容
-    private val quotes = listOf(
-        "F = ma",
+    // ===== A 内容 =====
+    private val quotesA = listOf(
+        "基础函数",
+        "sin(x)",
+        "cos(x)",
+        "π ≈ 3.1416"
+    )
+
+    // ===== B 内容 =====
+    private val quotesB = listOf(
+        "数字计算",
         "E = mc²",
-        "π ≈ 3.1416",
-        "知识就是力量",
-        "Stay curious",
-        "量子力学",
-        "熵增不灭",
-        "关你屁事！",
-        "G = 6.67430 × 10⁻¹¹",
-        "成功是积累的结果"
+        "7 × 8 = 56",
+        "普通运算"
+    )
+
+    // ===== C 内容 =====
+    private val quotesC = listOf(
+        "高级模式",
+        "矩阵运算",
+        "向量分析",
+        "∂/∂x"
+    )
+
+    // ===== D 内容 =====
+    private val quotesD = listOf(
+        "函数+数字",
+        "混合运算",
+        "工程模式",
+        "Hybrid A"
+    )
+
+    // ===== E 内容 =====
+    private val quotesE = listOf(
+        "符号+高级",
+        "隐藏模式",
+        "分析系统",
+        "Hybrid B"
+    )
+
+    // ===== F 内容 =====
+    private val quotesF = listOf(
+        "数字+高级",
+        "高级计算",
+        "实验功能",
+        "Hybrid C"
+    )
+
+    // ===== G 内容 =====
+    private val quotesG = listOf(
+        "完全模式",
+        "ALL SYSTEM",
+        "科学核心",
+        "Ultimate"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -109,7 +151,8 @@ class CalculatorActivity : AppCompatActivity() {
 
                 typeface = Typeface.DEFAULT_BOLD
 
-                setTextColor(0xFFFFFFFF.toInt())
+                // 按钮文字改黑色
+                setTextColor(0xFF000000.toInt())
 
                 setBackgroundResource(
                     R.drawable.calculator_button_orange
@@ -179,8 +222,26 @@ class CalculatorActivity : AppCompatActivity() {
         // 每3次触发一次
         if (inputCount % 3 == 0) {
 
-            display.text =
-                "Layer: ${recentLayers.joinToString()}"
+            val layerSet = recentLayers.toSet()
+
+            display.text = when (layerSet) {
+
+                setOf(1) -> quotesA.random()
+
+                setOf(2) -> quotesB.random()
+
+                setOf(3) -> quotesC.random()
+
+                setOf(1, 2) -> quotesD.random()
+
+                setOf(1, 3) -> quotesE.random()
+
+                setOf(2, 3) -> quotesF.random()
+
+                setOf(1, 2, 3) -> quotesG.random()
+
+                else -> "NULL"
+            }
 
         } else {
 
