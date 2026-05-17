@@ -97,7 +97,7 @@ class CalculatorActivity : AppCompatActivity() {
 
                 typeface = Typeface.DEFAULT_BOLD
 
-                setTextColor(0xFFFFFFFF.toInt())
+                setTextColor(0xFF1E3A5F.toInt())
 
                 setBackgroundResource(
                     R.drawable.calculator_button_orange
