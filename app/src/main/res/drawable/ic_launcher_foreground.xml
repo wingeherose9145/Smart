@@ -6,12 +6,43 @@
     android:viewportHeight="108">
 
     <!-- 深色背景 -->
-    <path android:fillColor="#111111" android:pathData="M0,0 h108 v108 h-108 z"/>
+    <path android:fillColor="#0F0F0F" android:pathData="M0,0 h108 v108 h-108 z"/>
 
-    <!-- 四个字符（居中排布） -->
-    <text android:x="54" android:y="35" android:text="角度" android:fontSize="9.5" android:textColor="#FFFFFF" android:textAlign="center"/>
-    <text android:x="54" android:y="48" android:text="直径" android:fontSize="9.5" android:textColor="#FFFFFF" android:textAlign="center"/>
-    <text android:x="54" android:y="61" android:text="百分比" android:fontSize="9.5" android:textColor="#FFFFFF" android:textAlign="center"/>
-    <text android:x="54" android:y="74" android:text="绝对值" android:fontSize="9.5" android:textColor="#FFFFFF" android:textAlign="center"/>
+    <!-- 四个字符垂直居中排列 -->
+    <text 
+        android:x="54" 
+        android:y="35" 
+        android:text="∡r" 
+        android:fontSize="13" 
+        android:textColor="#FFFFFF" 
+        android:textAlign="center"/>
+
+    <text 
+        android:x="54" 
+        android:y="49" 
+        android:text="φ" 
+        android:fontSize="16" 
+        android:textColor="#FFFFFF" 
+        android:textAlign="center"/>
+
+    <text 
+        android:x="54" 
+        android:y="63" 
+        android:text="%" 
+        android:fontSize="18" 
+        android:textColor="#FFFFFF" 
+        android:textAlign="center"/>
+
+    <text 
+        android:x="54" 
+        android:y="78" 
+        android:text="|x|" 
+        android:fontSize="14" 
+        android:textColor="#FFFFFF" 
+        android:textAlign="center"/>
+
+    <!-- 装饰横线 -->
+    <path android:strokeColor="#444444" android:strokeWidth="1.5" android:pathData="M25,23 L83,23"/>
+    <path android:strokeColor="#444444" android:strokeWidth="1.5" android:pathData="M25,85 L83,85"/>
 
 </vector>
