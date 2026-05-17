@@ -33,9 +33,9 @@ class CalculatorActivity : AppCompatActivity() {
 
     // 隐藏入口序列
     private val secretSequence = listOf(
-        "LG",
-        "8",
-        "COS",
+        "∡R",
+        "φ",
+        "%",
         "∞",
         "Ω"
     )
@@ -92,7 +92,7 @@ class CalculatorActivity : AppCompatActivity() {
 
             // ===== 第一层 =====
 
-            "sin", "cos", "tan", "π",
+            "sin", "cos", "φ", "π",
             "lg", "ln", "eˣ", "%",
             "Σ", "∫", "∞", "Ω",
             "Δ", "√", "≈", "≠",
@@ -107,7 +107,7 @@ class CalculatorActivity : AppCompatActivity() {
             // ===== 第三层 =====
 
             "|x|", "1/x", "x²", "xʸ",
-            "deg", "rad", "RND", "DEL",
+            "∡R", "rad", "RND", "DEL",
             "VEC", "MAT", "OFF", "ANS",
             "lim", "d/dx", "∂/∂x", "∇f"
         )
