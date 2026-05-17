@@ -8,41 +8,22 @@
     <!-- 深色背景 -->
     <path android:fillColor="#0F0F0F" android:pathData="M0,0 h108 v108 h-108 z"/>
 
-    <!-- 四个字符垂直居中排列 -->
-    <text 
-        android:x="54" 
-        android:y="35" 
-        android:text="∡r" 
-        android:fontSize="13" 
-        android:textColor="#FFFFFF" 
-        android:textAlign="center"/>
+    <!-- 计算器屏幕 -->
+    <path 
+        android:fillColor="#E0E0E0" 
+        android:pathData="M20,22 h68 v26 a6,6 0 0 1 -6,6 H26 a6,6 0 0 1 -6,-6 Z"/>
 
-    <text 
-        android:x="54" 
-        android:y="49" 
-        android:text="φ" 
-        android:fontSize="16" 
-        android:textColor="#FFFFFF" 
-        android:textAlign="center"/>
+    <!-- 四个字符模拟（用简单形状代替） -->
+    <!-- ∡r -->
+    <path android:fillColor="#1F1F1F" android:pathData="M30,32 L30,38 L45,38 L45,32 Z"/>
+    <!-- φ -->
+    <path android:fillColor="#1F1F1F" android:pathData="M55,32 L55,38 L70,38 L70,32 Z"/>
+    <!-- % -->
+    <path android:fillColor="#1F1F1F" android:pathData="M30,48 L30,54 L45,54 L45,48 Z"/>
+    <!-- |x| -->
+    <path android:fillColor="#1F1F1F" android:pathData="M55,48 L55,54 L70,54 L70,48 Z"/>
 
-    <text 
-        android:x="54" 
-        android:y="63" 
-        android:text="%" 
-        android:fontSize="18" 
-        android:textColor="#FFFFFF" 
-        android:textAlign="center"/>
-
-    <text 
-        android:x="54" 
-        android:y="78" 
-        android:text="|x|" 
-        android:fontSize="14" 
-        android:textColor="#FFFFFF" 
-        android:textAlign="center"/>
-
-    <!-- 装饰横线 -->
-    <path android:strokeColor="#444444" android:strokeWidth="1.5" android:pathData="M25,23 L83,23"/>
-    <path android:strokeColor="#444444" android:strokeWidth="1.5" android:pathData="M25,85 L83,85"/>
+    <!-- 下方按钮区域 -->
+    <path android:fillColor="#2C2C2E" android:pathData="M20,58 h68 v32 a6,6 0 0 1 -6,6 H26 a6,6 0 0 1 -6,-6 Z"/>
 
 </vector>
