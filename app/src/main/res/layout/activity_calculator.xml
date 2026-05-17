@@ -5,20 +5,22 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#EAF7FF"
-    android:padding="6dp">
+    android:padding="8dp">
+
+    <!-- 显示区域 -->
 
     <TextView
         android:id="@+id/tv_display"
         android:layout_width="match_parent"
-        android:layout_height="90dp"
-        android:layout_marginBottom="6dp"
-        android:background="#2A1408"
+        android:layout_height="120dp"
         android:gravity="center_vertical|end"
-        android:padding="16dp"
         android:text="0"
-        android:textColor="#FFB366"
-        android:textSize="32sp"
-        android:textStyle="bold" />
+        android:textSize="28sp"
+        android:textColor="#1E3A5F"
+        android:padding="16dp"
+        android:background="#66FFFFFF" />
+
+    <!-- 按钮区域 -->
 
     <GridLayout
         android:id="@+id/grid_buttons"
@@ -27,8 +29,6 @@
         android:layout_weight="1"
         android:columnCount="4"
         android:rowCount="12"
-        android:padding="8dp"/>
-
-    </GridLayout>
+        android:padding="4dp" />
 
 </LinearLayout>
