@@ -110,9 +110,7 @@ class MainActivity : AppCompatActivity() {
                 val name = cursor.getString(nameColumn) ?: "未知视频"
                 val sourceUri = Uri.withAppendedPath(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id.toString())
 
-                // 关键：复制到 App 内部存储
                 val internalUri = copyVideoToInternalStorage(sourceUri, name)
-
                 if (internalUri != null) {
                     videoUris.add(internalUri)
                     displayNames.add(name)
@@ -126,14 +124,13 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "已添加 ${displayNames.size} 个视频（已复制到内部）", Toast.LENGTH_SHORT).show()
     }
 
-    // 复制视频到 App 内部私有目录
     private fun copyVideoToInternalStorage(sourceUri: Uri, fileName: String): Uri? {
         return try {
             val inputStream = contentResolver.openInputStream(sourceUri) ?: return null
-            
-            val internalDir = getExternalFilesDir(null) ?: filesDir
-            val targetFile = File(internalDir, "videos/${System.currentTimeMillis()}_$fileName")
-            targetFile.parentFile?.mkdirs()
+            val videosDir = File(getExternalFilesDir(null), "videos")
+            videosDir.mkdirs()
+
+            val targetFile = File(videosDir, "${System.currentTimeMillis()}_$fileName")
 
             FileOutputStream(targetFile).use { output ->
                 inputStream.copyTo(output)
@@ -143,12 +140,10 @@ class MainActivity : AppCompatActivity() {
             Uri.fromFile(targetFile)
         } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(this, "复制失败: $fileName", Toast.LENGTH_SHORT).show()
             null
         }
     }
 
-    // 其他函数保持不变（hasPermission、loadSavedListOrRefresh、saveVideoList 等）
     private fun hasPermission(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED
@@ -189,19 +184,22 @@ class MainActivity : AppCompatActivity() {
         val uriJson = prefs.getString("uris", null) ?: return false
         val nameJson = prefs.getString("names", null) ?: return false
 
-        try {
-            val uriList: List<String> = Gson().fromJson(uriJson, object : TypeToken<List<String>>() {}.type)
-            val nameList: List<String> = Gson().fromJson(nameJson, object : TypeToken<List<String>>() {}.type)
+        return try {
+            val uriType = object : TypeToken<List<String>>() {}.type
+            val nameType = object : TypeToken<List<String>>() {}.type
+
+            val savedUris: List<String> = Gson().fromJson(uriJson, uriType)
+            val savedNames: List<String> = Gson().fromJson(nameJson, nameType)
 
             videoUris.clear()
             displayNames.clear()
-            uriList.forEach { videoUris.add(Uri.parse(it)) }
-            displayNames.addAll(nameList)
+            savedUris.forEach { videoUris.add(Uri.parse(it)) }
+            displayNames.addAll(savedNames)
 
             adapter.notifyDataSetChanged()
             return true
         } catch (e: Exception) {
-            return false
+            false
         }
     }
 
