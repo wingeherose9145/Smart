@@ -4,5 +4,8 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- 完全透明背景 -->
+    
+    <path
+        android:fillColor="#111111"
+        android:pathData="M0,0 h108 v108 h-108 z"/>
 </vector>
