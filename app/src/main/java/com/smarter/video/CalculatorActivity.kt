@@ -62,29 +62,28 @@ class CalculatorActivity : AppCompatActivity() {
 
         grid.removeAllViews()
 
-        val buttonTexts = listOf(
+       val buttonTexts = listOf(
 
-            "sin", "cos", "tan", "π",
+    // ===== 上四行：短字符 =====
 
-            "lg", "ln", "eˣ", "%",
+    "sin", "cos", "tan", "π",
+    "lg", "ln", "eˣ", "%",
+    "Σ", "∫", "∞", "Ω",
+    "Δ", "√", "≈", "≠",
 
-            "7", "8", "9", "÷",
+    // ===== 中四行：数字计算 =====
 
-            "4", "5", "6", "×",
+    "7", "8", "9", "÷",
+    "4", "5", "6", "×",
+    "1", "2", "3", "-",
+    "0", ".", "=", "+",
 
-            "1", "2", "3", "-",
+    // ===== 下四行：长字符功能 =====
 
-            "0", ".", "=", "+",
-
-            "deg", "rad", "|x|", "1/x",
-
-            "Σ", "∫", "∞", "DEL",
-
-            "kg", "mol", "A", "K",
-
-            "Hz", "Ω", "F", "H",
-
-            "VEC", "MAT", "RND", "OFF"
+    "|x|", "1/x", "x²", "xʸ",
+    "deg", "rad", "RND", "DEL",
+    "VEC", "MAT", "OFF", "ANS",
+    "lim", "d/dx", "∂/∂x", "∇f"
         )
 
         buttonTexts.forEachIndexed { index, text ->
@@ -93,7 +92,7 @@ class CalculatorActivity : AppCompatActivity() {
 
                 this.text = text
 
-                textSize = 22f
+                textSize = 18f
 
                 typeface = Typeface.DEFAULT_BOLD
 
