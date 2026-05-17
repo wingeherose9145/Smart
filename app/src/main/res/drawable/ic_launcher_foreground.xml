@@ -5,40 +5,23 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- 角度 ∡r -->
-    <text
-        android:x="29"
-        android:y="42"
-        android:text="∡r"
-        android:fontSize="13.5"
-        android:textColor="#FFFFFF"
-        android:textAlign="center" />
+    <!-- 深色背景 -->
+    <path android:fillColor="#111111" android:pathData="M0,0 h108 v108 h-108 z"/>
 
-    <!-- 直径 φ -->
-    <text
-        android:x="29"
-        android:y="64"
-        android:text="φ"
-        android:fontSize="19"
-        android:textColor="#FFFFFF"
-        android:textAlign="center" />
+    <!-- ∡R -->
+    <path android:fillColor="#FFFFFF" android:pathData="M25,32 L25,40 L38,40 L38,32 Z"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M29,32 L35,38"/>
 
-    <!-- 百分比 % -->
-    <text
-        android:x="79"
-        android:y="42"
-        android:text="%"
-        android:fontSize="21"
-        android:textColor="#FFFFFF"
-        android:textAlign="center" />
+    <!-- φ -->
+    <path android:fillColor="#FFFFFF" android:pathData="M55,30 L55,42 L70,42 L70,30 Z"/>
+    <path android:fillColor="#111111" android:pathData="M60,33 L65,39"/>
 
-    <!-- 绝对值 |x| -->
-    <text
-        android:x="79"
-        android:y="64"
-        android:text="|x|"
-        android:fontSize="15"
-        android:textColor="#FFFFFF"
-        android:textAlign="center" />
+    <!-- % -->
+    <path android:fillColor="#FFFFFF" android:pathData="M25,55 L25,65 L40,65 L40,55 Z"/>
+    <path android:fillColor="#111111" android:pathData="M29,58 L36,62"/>
+
+    <!-- |x| -->
+    <path android:fillColor="#FFFFFF" android:pathData="M55,55 L55,65 L70,65 L70,55 Z"/>
+    <path android:fillColor="#111111" android:pathData="M59,57 L59,63 M66,57 L66,63"/>
 
 </vector>
