@@ -7,7 +7,10 @@
 
     <path
         android:fillColor="#000000"
-        android:pathData="M54,23 L75,51 h-42 Z M54,31.5 L40.5,48.5 h27 Z"/>
+        android:pathData="M54,23 c-7.7,0 -14,6.3 -14,14 s6.3,14 14,14 s14,-6.3 14,-14 s-6.3,-14 -14,-14 z M54,47 c-5.5,0 -10,-4.5 -10,-10 s4.5,-10 10,-10 s10,4.5 10,10 s-4.5,10 -10,10 z"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M52.25,18 h3.5 v38 h-3.5 z"/>
 
     <path
         android:fillColor="#000000"
