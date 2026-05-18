@@ -1,210 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:aapt="http://schemas.android.com/apk/res/auto"
     android:width="108dp"
     android:height="108dp"
-    android:viewportWidth="100"
-    android:viewportHeight="100">
+    android:viewportWidth="108"
+    android:viewportHeight="108">
 
-    <group
-        android:scaleX="0.82"
-        android:scaleY="0.82"
-        android:pivotX="50"
-        android:pivotY="50">
+    <!-- 深蓝紫渐变背景 -->
+    <path android:fillColor="#0A1428" android:pathData="M0,0 h108 v108 h-108 z"/>
 
-        <!-- 背景渐变 -->
-        <path
-            android:pathData="M0,0h100v100h-100z">
-            <aapt:attr name="android:fillColor">
-                <gradient
-                    android:startX="0"
-                    android:startY="0"
-                    android:endX="100"
-                    android:endY="100"
-                    android:type="linear">
-                    <stop
-                        android:offset="0"
-                        android:color="#0F3A66" />
-                    <stop
-                        android:offset="0.5"
-                        android:color="#162F61" />
-                    <stop
-                        android:offset="1"
-                        android:color="#4A1566" />
-                </gradient>
-            </aapt:attr>
-        </path>
+    <!-- 主要符号群 -->
+    <!-- √a -->
+    <path android:fillColor="#00F5FF" android:pathData="M25,35 L32,55 L45,35"/>
+    <path android:fillColor="#00F5FF" android:pathData="M28,48 L42,48"/>
 
-        <!-- 网格 -->
-        <path
-            android:strokeColor="#477BB0"
-            android:strokeWidth="0.15"
-            android:strokeAlpha="0.25"
-            android:pathData="
-                M10,0v100
-                M20,0v100
-                M30,0v100
-                M40,0v100
-                M50,0v100
-                M60,0v100
-                M70,0v100
-                M80,0v100
-                M90,0v100
-                M0,10h100
-                M0,20h100
-                M0,30h100
-                M0,40h100
-                M0,50h100
-                M0,60h100
-                M0,70h100
-                M0,80h100
-                M0,90h100" />
+    <!-- π -->
+    <path android:fillColor="#A020F0" android:pathData="M60,32 L60,55 L75,32 L75,55" />
 
-        <!-- HUD线条 -->
-        <path
-            android:strokeColor="#5AA0E6"
-            android:strokeWidth="0.4"
-            android:strokeAlpha="0.4"
-            android:pathData="
-                M38,0v100
-                M38,35h62
-                M38,52h32
-                M70,35v35
-                M38,70h62
-                M70,82h30
-                M85,70v30" />
+    <!-- Σ -->
+    <path android:fillColor="#FFFFFF" android:pathData="M28,65 L45,65 L36,80 L28,65 Z"/>
 
-        <!-- 左侧装饰 -->
-        <path
-            android:fillColor="#C2E7FF"
-            android:fillAlpha="0.95"
-            android:pathData="
-                M24,20
-                c-3,0 -5,2 -5,5
-                s2,4 3,5
-                l0,40
-                c0,3 3,5 3,7
-                s-2,4 -5,4
-                c2,0 4,-1 4,-3
-                l0,-44
-                c0,-3 -3,-5 -3,-7
-                c0,-3 3,-7 6,-7z" />
+    <!-- f(x) -->
+    <path android:fillColor="#FF00FF" android:pathData="M65,65 L80,65 L72,80 L65,65 Z"/>
 
-        <!-- 顶部卡片 -->
-        <path
-            android:fillColor="#F0F7FF"
-            android:strokeColor="#A6D8FF"
-            android:strokeWidth="0.8"
-            android:pathData="
-                M72,8
-                h22
-                a4,4 0,0 1,4 4
-                v16
-                a4,4 0,0 1,-4 4
-                h-22
-                a4,4 0,0 1,-4 -4
-                v-16
-                a4,4 0,0 1,4 -4z" />
-
-        <path
-            android:fillColor="#0A203D"
-            android:pathData="
-                M76,14h14v1.5h-14z
-                M76,20h10v1.5h-10z" />
-
-        <!-- 波形 -->
-        <path
-            android:strokeColor="#C2E7FF"
-            android:strokeWidth="0.8"
-            android:pathData="M44,22l3,5l4,-15h8" />
-
-        <path
-            android:fillColor="#C2E7FF"
-            android:pathData="M54,16h3v4h-3z" />
-
-        <!-- 中间箭头 -->
-        <path
-            android:fillColor="#C2E7FF"
-            android:pathData="
-                M44,41
-                h11
-                v1.5
-                h-9
-                l5.5,3.5
-                l-5.5,3.5
-                h9
-                v1.5
-                h-11
-                v-1
-                l5.5,-4
-                l-5.5,-4z" />
-
-        <!-- 中间X -->
-        <path
-            android:fillColor="#C2E7FF"
-            android:pathData="
-                M60,42
-                l2,2.5
-                l2,-2.5
-                h1.5
-                l-2.8,3.5
-                l2.8,3.5
-                h-1.5
-                l-2,-2.5
-                l-2,2.5
-                h-1.5
-                l2.8,-3.5
-                l-2.8,-3.5z
-
-                M66,39
-                h2
-                v0.8
-                h-1
-                v0.8
-                h1
-                v0.8
-                h-2
-                v-0.8
-                h1
-                v-0.8
-                h-1z" />
-
-        <!-- 底部加号 -->
-        <path
-            android:fillColor="#C2E7FF"
-            android:pathData="
-                M76,75h4v-4h1v4h4v1h-4v4h-1v-4h-4z" />
-
-        <!-- 底部减号 -->
-        <path
-            android:fillColor="#C2E7FF"
-            android:pathData="M90,75h6v1h-6z" />
-
-        <!-- 底部叉号 -->
-        <path
-            android:fillColor="#C2E7FF"
-            android:pathData="
-                M76,88
-                l2,2
-                l2,-2
-                l0.8,0.8
-                l-2,2
-                l2,2
-                l-0.8,0.8
-                l-2,-2
-                l-2,2
-                l-0.8,-0.8
-                l2,-2
-                l-2,-2z" />
-
-        <!-- 底部除号 -->
-        <path
-            android:fillColor="#C2E7FF"
-            android:pathData="
-                M90,90h6v1h-6z
-                M92,87h2v1.5h-2z
-                M92,93h2v1.5h-2z" />
-
-    </group>
+    <!-- 其他装饰符号 -->
+    <path android:fillColor="#00FFAA" android:pathData="M25,75 L30,85 L40,75"/>
+    <path android:fillColor="#FFD700" android:pathData="M70,78 L75,85 L85,78"/>
 
 </vector>
