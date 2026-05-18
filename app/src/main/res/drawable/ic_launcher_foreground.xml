@@ -5,25 +5,27 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- 深蓝紫渐变背景 -->
-    <path android:fillColor="#0A1428" android:pathData="M0,0 h108 v108 h-108 z"/>
+    <!-- 深色渐变背景 -->
+    <path android:fillColor="#0B0E1A" android:pathData="M0,0 h108 v108 h-108 z"/>
 
-    <!-- 主要符号群 -->
-    <!-- √a -->
-    <path android:fillColor="#00F5FF" android:pathData="M25,35 L32,55 L45,35"/>
-    <path android:fillColor="#00F5FF" android:pathData="M28,48 L42,48"/>
+    <!-- 大符号 - Σ -->
+    <path android:fillColor="#00E5FF" android:pathData="M28,32 L45,32 L36,52 L28,32 Z" />
 
-    <!-- π -->
-    <path android:fillColor="#A020F0" android:pathData="M60,32 L60,55 L75,32 L75,55" />
+    <!-- 中符号 - π -->
+    <path android:fillColor="#A78BFA" android:pathData="M65,28 L65,48 L78,28 L78,48" />
 
-    <!-- Σ -->
-    <path android:fillColor="#FFFFFF" android:pathData="M28,65 L45,65 L36,80 L28,65 Z"/>
+    <!-- 大符号 - √ -->
+    <path android:fillColor="#FF6B9D" android:pathData="M25,62 L32,78 L48,62" />
 
-    <!-- f(x) -->
-    <path android:fillColor="#FF00FF" android:pathData="M65,65 L80,65 L72,80 L65,65 Z"/>
+    <!-- 中符号 - ∞ -->
+    <path android:fillColor="#4ADE80" android:pathData="M62,65 Q70,55 78,65 Q70,75 62,65" />
 
-    <!-- 其他装饰符号 -->
-    <path android:fillColor="#00FFAA" android:pathData="M25,75 L30,85 L40,75"/>
-    <path android:fillColor="#FFD700" android:pathData="M70,78 L75,85 L85,78"/>
+    <!-- 小符号 - % -->
+    <path android:fillColor="#FBBF24" android:pathData="M30,80 L30,88 L38,88 L38,80 Z" />
+    <path android:fillColor="#FBBF24" android:pathData="M34,82 L36,86" />
+
+    <!-- 小符号 - |x| -->
+    <path android:fillColor="#C4B5FD" android:pathData="M68,78 L68,88 L72,88 L72,78 Z" />
+    <path android:fillColor="#C4B5FD" android:pathData="M76,78 L76,88 L80,88 L80,78 Z" />
 
 </vector>
