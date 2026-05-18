@@ -40,7 +40,7 @@ class CalculatorActivity : AppCompatActivity() {
         "φ",
         "%",
         "∞",
-        "Ω"
+        "xʸ"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,8 +100,8 @@ class CalculatorActivity : AppCompatActivity() {
             // ===== 第三层 =====
             "|x|", "1/x", "x²", "xʸ",
             "∡R", "rad", "RND", "DEL",
-            "VEC", "MAT", "OFF", "ANS",
-            "lim", "d/dx", "∂/∂x", "∇f"
+            "VEC", "MAT", "lim", "ANS",
+            "OFF", "fu", "∂/∂x", "∇f"
         )
 
         buttonTexts.forEachIndexed { index, text ->
