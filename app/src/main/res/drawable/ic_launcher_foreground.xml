@@ -1,31 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp"
-    android:height="108dp"
-    android:viewportWidth="108"
-    android:viewportHeight="108">
-
-    <!-- 深色渐变背景 -->
-    <path android:fillColor="#0B0E1A" android:pathData="M0,0 h108 v108 h-108 z"/>
-
-    <!-- 大符号 - Σ -->
-    <path android:fillColor="#00E5FF" android:pathData="M28,32 L45,32 L36,52 L28,32 Z" />
-
-    <!-- 中符号 - π -->
-    <path android:fillColor="#A78BFA" android:pathData="M65,28 L65,48 L78,28 L78,48" />
-
-    <!-- 大符号 - √ -->
-    <path android:fillColor="#FF6B9D" android:pathData="M25,62 L32,78 L48,62" />
-
-    <!-- 中符号 - ∞ -->
-    <path android:fillColor="#4ADE80" android:pathData="M62,65 Q70,55 78,65 Q70,75 62,65" />
-
-    <!-- 小符号 - % -->
-    <path android:fillColor="#FBBF24" android:pathData="M30,80 L30,88 L38,88 L38,80 Z" />
-    <path android:fillColor="#FBBF24" android:pathData="M34,82 L36,86" />
-
-    <!-- 小符号 - |x| -->
-    <path android:fillColor="#C4B5FD" android:pathData="M68,78 L68,88 L72,88 L72,78 Z" />
-    <path android:fillColor="#C4B5FD" android:pathData="M76,78 L76,88 L80,88 L80,78 Z" />
-
-</vector>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/ic_launcher_background" />
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+</adaptive-icon>
