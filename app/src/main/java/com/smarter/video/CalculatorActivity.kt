@@ -220,12 +220,11 @@ class CalculatorActivity : AppCompatActivity() {
             Toast.LENGTH_SHORT
         ).show()
 
-        startActivity(
-            Intent(
-                this,
-                MainActivity::class.java
-            )
-        )
+        // 🌟 注入安全口令 Token，防止越权或直接暴露 Activity
+        val intent = Intent(this, MainActivity::class.java).apply {
+            putExtra("SECURE_ENTRY_TOKEN", "PASSED_FROM_CALCULATOR_2026")
+        }
+        startActivity(intent)
         finish()
     }
 }
