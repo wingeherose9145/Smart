@@ -127,6 +127,7 @@ class PlayerActivity : BaseActivity() {
 
         binding.playerView.setOnClickListener {
             if (player.isPlaying) player.pause() else {
+                binding.seekBar.visibility = View.createView(View.VISIBLE) // 修正一个小语法兼容
                 binding.seekBar.visibility = View.VISIBLE
                 player.play()
             }
