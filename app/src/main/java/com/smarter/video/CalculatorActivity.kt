@@ -117,14 +117,13 @@ class CalculatorActivity : AppCompatActivity() {
                 textSize = 18f
                 typeface = Typeface.DEFAULT_BOLD
 
-                // 黑色按钮文字
-                setTextColor(0xFF000000.toInt())
+                // 亮蓝色按钮文字
+                setTextColor(0xFF66CCFF.toInt())
 
-                // 天蓝色按钮背景
-                setBackgroundResource(
-                    R.drawable.calculator_button_orange
-                )
-
+               // 黑色按钮背景（边框保持 drawable 原样）
+               setBackgroundResource(
+                   R.drawable.calculator_button_black
+               )
                 val row = index / 4
                 val col = index % 4
 
