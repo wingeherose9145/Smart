@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -15,7 +16,6 @@ import com.smarter.video.databinding.ActivityMainBinding
 import java.io.File
 import java.io.FileOutputStream
 
-// 常量抽取
 private const val PREF_NAME = "video_list"
 private const val KEY_URIS = "uris"
 private const val KEY_NAMES = "names"
@@ -30,7 +30,9 @@ class MainActivity : AppCompatActivity() {
     private val pickVideosLauncher = registerForActivityResult(
         ActivityResultContracts.GetMultipleContents()
     ) { uris ->
-        if (!uris.isNullOrEmpty()) importVideos(uris)
+        if (!uris.isNullOrEmpty()) {
+            importVideos(uris)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,7 +53,9 @@ class MainActivity : AppCompatActivity() {
         binding.videoListView.adapter = adapter
 
         binding.videoListView.setOnItemClickListener { _, _, position, _ ->
-            startPlayerActivity(position)
+            if (position in videoUris.indices) {
+                startPlayerActivity(position)
+            }
         }
 
         binding.videoListView.setOnItemLongClickListener { _, _, position, _ ->
@@ -69,33 +73,29 @@ class MainActivity : AppCompatActivity() {
         loadSavedVideoList()
         scanInternalVideosFolder()
 
-        // 排序
+        // 按文件名排序
         val sorted = videoUris.zip(displayNames).sortedBy { it.second.lowercase() }
         videoUris.clear()
         displayNames.clear()
-        sorted.forEach { (u, n) ->
-            videoUris.add(u)
-            displayNames.add(n)
+        sorted.forEach { (uri, name) ->
+            videoUris.add(uri)
+            displayNames.add(name)
         }
 
         adapter.notifyDataSetChanged()
-        updateEmptyState()
         saveVideoList()
     }
 
-    private fun updateEmptyState() {
-        binding.emptyView.visibility = if (videoUris.isEmpty()) View.VISIBLE else View.GONE
-    }
-
-    private fun scanInternalVideosFolder() { /* 同之前版本 */ 
+    private fun scanInternalVideosFolder() {
         val videosDir = File(getExternalFilesDir(null), "videos")
         if (!videosDir.exists()) return
 
-        val existing = videoUris.map { it.path }.toSet()
+        val existingPaths = videoUris.mapNotNull { it.path }.toSet()
+
         videosDir.listFiles()?.forEach { file ->
             if (file.isFile && isVideoFile(file)) {
                 val uri = Uri.fromFile(file)
-                if (uri.path !in existing) {
+                if (uri.path !in existingPaths) {
                     videoUris.add(uri)
                     displayNames.add(file.name)
                 }
@@ -108,8 +108,104 @@ class MainActivity : AppCompatActivity() {
         return ext in listOf("mp4", "mkv", "mov", "avi", "wmv", "flv", "webm", "3gp", "m4v")
     }
 
-    // 其他函数（importVideos、getFileNameFromUri、deleteVideo、save/load）保持和之前一致
-    // ...（为节省篇幅，这里省略完全相同的部分，你可以直接复制上一个版本的对应函数）
+    private fun importVideos(uris: List<Uri>) {
+        Thread {
+            var added = 0
+            val videosDir = File(getExternalFilesDir(null), "videos").apply { mkdirs() }
+
+            uris.forEach { sourceUri ->
+                val name = getFileNameFromUri(sourceUri)
+                val safeName = "${System.currentTimeMillis()}_$name"
+                val targetFile = File(videosDir, safeName)
+
+                try {
+                    contentResolver.openInputStream(sourceUri)?.use { input ->
+                        FileOutputStream(targetFile).use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+                    val newUri = Uri.fromFile(targetFile)
+                    runOnUiThread {
+                        videoUris.add(newUri)
+                        displayNames.add(targetFile.name)
+                        adapter.notifyDataSetChanged()
+                    }
+                    added++
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+            runOnUiThread {
+                saveVideoList()
+                Toast.makeText(this, "成功导入 $added 个视频", Toast.LENGTH_SHORT).show()
+            }
+        }.start()
+    }
+
+    private fun getFileNameFromUri(uri: Uri): String {
+        var name = "video_${System.currentTimeMillis()}.mp4"
+        try {
+            contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (index != -1 && cursor.moveToFirst()) {
+                    cursor.getString(index)?.let { if (it.isNotBlank()) name = it }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return name
+    }
+
+    private fun deleteVideo(position: Int) {
+        try {
+            val uri = videoUris[position]
+            if (uri.scheme == "file") {
+                File(uri.path!!).delete()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        videoUris.removeAt(position)
+        displayNames.removeAt(position)
+        adapter.notifyDataSetChanged()
+        saveVideoList()
+        Toast.makeText(this, "已删除", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showDeleteDialog(position: Int) {
+        AlertDialog.Builder(this)
+            .setTitle("删除视频")
+            .setMessage("确认要永久删除该视频吗？")
+            .setPositiveButton("删除") { _, _ -> deleteVideo(position) }
+            .setNegativeButton("取消", null)
+            .show()
+    }
+
+    private fun saveVideoList() {
+        val prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE).edit()
+        prefs.putString(KEY_URIS, Gson().toJson(videoUris.map { it.toString() }))
+        prefs.putString(KEY_NAMES, Gson().toJson(displayNames))
+        prefs.apply()
+    }
+
+    private fun loadSavedVideoList() {
+        val prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE)
+        val uriJson = prefs.getString(KEY_URIS, null) ?: return
+        val nameJson = prefs.getString(KEY_NAMES, null) ?: return
+
+        try {
+            val uris: List<String> = Gson().fromJson(uriJson, object : TypeToken<List<String>>() {}.type)
+            val names: List<String> = Gson().fromJson(nameJson, object : TypeToken<List<String>>() {}.type)
+
+            uris.forEach { videoUris.add(Uri.parse(it)) }
+            displayNames.addAll(names)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
     private fun startPlayerActivity(position: Int) {
         val intent = Intent(this, PlayerActivity::class.java).apply {
@@ -118,6 +214,4 @@ class MainActivity : AppCompatActivity() {
         }
         startActivity(intent)
     }
-
-    private fun showDeleteDialog(position: Int) { /* 同之前 */ }
 }
