@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
 
-        <!-- 假计算器界面 - 默认启动（入口伪装） -->
+        <!-- 伪装入口（计算器） -->
         <activity
             android:name=".CalculatorActivity"
             android:exported="true"
@@ -25,19 +25,21 @@
             </intent-filter>
         </activity>
 
-        <!-- 真实视频列表界面 -->
+        <!-- 真实视频列表 -->
         <activity
             android:name=".MainActivity"
             android:exported="false"
+            android:launchMode="singleTask"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
 
         <!-- 视频播放器 -->
         <activity
             android:name=".PlayerActivity"
             android:exported="false"
-            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+            android:launchMode="singleTask"
             android:screenOrientation="sensor"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|uiMode|smallestScreenSize" />
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|uiMode|smallestScreenSize"
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
 
     </application>
 
