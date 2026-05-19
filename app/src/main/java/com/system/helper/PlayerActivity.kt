@@ -31,7 +31,6 @@ class PlayerActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var gestureDetector: GestureDetector
 
-    // 用于自动隐藏进度条的计时器任务
     private val hideSeekBarRunnable = Runnable {
         if (player.isPlaying) {
             seekBar.visibility = View.GONE
@@ -41,7 +40,7 @@ class PlayerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 🌟 强效拦截：如果安全 Token 不匹配，直接踢回计算器
+        // 🌟 核心验证：检查播放器调起时是否携带计算器认证 Token
         if (intent.getStringExtra("SECURE_ENTRY_TOKEN") != "PASSED_FROM_CALCULATOR_2026") {
             redirectToCalculator()
             return
@@ -62,7 +61,6 @@ class PlayerActivity : AppCompatActivity() {
         playerView = findViewById(R.id.playerView)
         seekBar = findViewById(R.id.seekBar)
 
-        // 初始化：一进来视频默认开始播放，进度条先默认隐藏
         seekBar.visibility = View.GONE
 
         player = ExoPlayer.Builder(this).build()
@@ -81,7 +79,6 @@ class PlayerActivity : AppCompatActivity() {
         setupGestureDetector()
         setupSeekBar()
 
-        // 核心改进：绑定播放器状态监听器
         player.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(state: Int) {
                 if (state == Player.STATE_ENDED) {
@@ -89,14 +86,11 @@ class PlayerActivity : AppCompatActivity() {
                 }
             }
 
-            // 监听播放/暂停的真正状态切换
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 if (isPlaying) {
-                    // 如果进入【播放】状态：触发倒计时 3 秒后自动隐藏进度条
                     handler.removeCallbacks(hideSeekBarRunnable)
                     handler.postDelayed(hideSeekBarRunnable, 3000)
                 } else {
-                    // 如果进入【暂停】状态：强行让进度条【永远可见】
                     handler.removeCallbacks(hideSeekBarRunnable)
                     seekBar.visibility = View.VISIBLE
                 }
@@ -105,14 +99,10 @@ class PlayerActivity : AppCompatActivity() {
 
         playCurrentVideo()
 
-        // 核心改进：点击屏幕的交互逻辑
         playerView.setOnClickListener {
             if (player.isPlaying) {
-                // 如果当前正在播放：点击屏幕 -> 触发暂停（触发后会由于上面的监听自动显示进度条）
                 player.pause()
             } else {
-                // 如果当前是暂停的：点击屏幕 -> 触发恢复播放
-                // 先把进度条唤醒亮起，然后开始 3 秒倒计时自动隐去
                 seekBar.visibility = View.VISIBLE
                 player.play()
             }
@@ -121,7 +111,6 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // 🌟 强效二次核对，不合规直接销毁
         if (intent.getStringExtra("SECURE_ENTRY_TOKEN") != "PASSED_FROM_CALCULATOR_2026") {
             redirectToCalculator()
         }
@@ -129,7 +118,7 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onRestart() {
         super.onRestart()
-        // 🌟 核心改进 2：当用户切到后台查看其他App，再点击最近任务切回播放器时，直接清除队列，强制滚回计算器重新解锁
+        // 🌟 核心需求 2：防止通过最近任务或切换后台直接回到播放页面，强制退出锁死
         redirectToCalculator()
     }
 
@@ -211,7 +200,6 @@ class PlayerActivity : AppCompatActivity() {
                     return false
                 }
 
-                // 单击屏幕时如果正在播放，短暂亮起进度条再自动隐藏
                 override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
                     if (player.isPlaying) {
                         if (seekBar.visibility == View.VISIBLE) {
@@ -230,7 +218,6 @@ class PlayerActivity : AppCompatActivity() {
 
         playerView.setOnTouchListener { _, event ->
             gestureDetector.onTouchEvent(event)
-            // 返回 false，确保 setOnClickListener 的点击事件不被手势完全吞掉
             false
         }
     }
@@ -238,7 +225,6 @@ class PlayerActivity : AppCompatActivity() {
     private fun setupSeekBar() {
         handler.post(object : Runnable {
             override fun run() {
-                // 只有当进度条可见时，才浪费性能去刷新位置，不可见时静默，优化性能
                 if (player.duration > 0 && seekBar.visibility == View.VISIBLE) {
                     seekBar.max = player.duration.toInt()
                     seekBar.progress = player.currentPosition.toInt()
@@ -256,7 +242,6 @@ class PlayerActivity : AppCompatActivity() {
                 ) {
                     if (fromUser) {
                         player.seekTo(progress.toLong())
-                        // 用户手动拖动进度条时，重新刷新 3 秒隐藏的倒计时，防止拖到一半突然隐形
                         if (player.isPlaying) {
                             handler.removeCallbacks(hideSeekBarRunnable)
                             handler.postDelayed(hideSeekBarRunnable, 3000)
@@ -265,12 +250,10 @@ class PlayerActivity : AppCompatActivity() {
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                    // 用户开始拖动，移除隐藏任务
                     handler.removeCallbacks(hideSeekBarRunnable)
                 }
 
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                    // 用户松开手，如果是播放中，恢复 3 秒后隐藏
                     if (player.isPlaying) {
                         handler.removeCallbacks(hideSeekBarRunnable)
                         handler.postDelayed(hideSeekBarRunnable, 3000)
