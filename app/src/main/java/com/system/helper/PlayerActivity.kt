@@ -32,7 +32,6 @@ class PlayerActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var gestureDetector: GestureDetector
 
-    // 统一管理 SeekBar 可见性
     private val hideSeekBarRunnable = Runnable {
         if (player.isPlaying) {
             binding.seekBar.visibility = View.GONE
@@ -42,7 +41,6 @@ class PlayerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 解决方向切换重建 Activity 问题
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
 
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
@@ -92,7 +90,6 @@ class PlayerActivity : AppCompatActivity() {
         })
     }
 
-    // ==================== 统一 SeekBar 可见性逻辑 ====================
     private fun updateSeekBarVisibility(isPlaying: Boolean) {
         handler.removeCallbacks(hideSeekBarRunnable)
         if (isPlaying) {
@@ -137,7 +134,6 @@ class PlayerActivity : AppCompatActivity() {
             false
         }
 
-        // 点击屏幕：播放/暂停
         binding.playerView.setOnClickListener {
             if (player.isPlaying) {
                 player.pause()
@@ -149,7 +145,6 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun setupSeekBar() {
-        // 进度条定时刷新
         handler.post(object : Runnable {
             override fun run() {
                 if (binding.seekBar.visibility == View.VISIBLE && player.duration > 0) {
@@ -162,9 +157,7 @@ class PlayerActivity : AppCompatActivity() {
 
         binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (fromUser) {
-                    player.seekTo(progress.toLong())
-                }
+                if (fromUser) player.seekTo(progress.toLong())
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
