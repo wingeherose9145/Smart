@@ -10,7 +10,7 @@
     <!-- 半透明白色边框 -->
     <stroke
         android:width="1.5dp"
-        android:color="#99FFFFFF"/>
+        android:color="#99999999"/>
 
     <!-- 内边距 -->
     <padding
