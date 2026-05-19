@@ -2,6 +2,10 @@ name: Android CI
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'raw_videos/**'   # 监听视频源目录变化
 
 jobs:
   build:
@@ -20,9 +24,21 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      # 🌟 核心需求 1 实现：在打包编译前，自动化把外部存储的原始视频移入 Assets 资源包
+      - name: Move and Sync Raw Videos to Assets Package
+        run: |
+          mkdir -p app/src/main/assets/videos
+          if [ -d "raw_videos" ] && [ "$(ls -A raw_videos)" ]; then
+            echo "发现更新视频，正在文件移动存入 assets..."
+            cp -r raw_videos/* app/src/main/assets/videos/
+          else
+            echo "没有新增的视频，保持包体原样编译。"
+          fi
+
       - name: Grant execute permission
         run: chmod +x ./gradlew
 
+      # 采用你原本的编译目标，这里也可以根据需要改成 assembleRelease
       - name: Build APK
         run: ./gradlew assembleDebug
 
