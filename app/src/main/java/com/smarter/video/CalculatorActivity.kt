@@ -22,7 +22,7 @@ class CalculatorActivity : AppCompatActivity() {
     // 最近输入层级
     private val recentLayers = mutableListOf<Int>()
 
-    // 🌟 核心修复：独立出来的暗号专用缓存，不受3次清空影响，始终只保留最近5次有效按键
+    // 核心修复：独立出来的暗号专用缓存，不受3次清空影响，始终只保留最近5次有效按键
     private val secretBuffer = mutableListOf<String>()
 
     // 动态内容库
@@ -105,7 +105,6 @@ class CalculatorActivity : AppCompatActivity() {
         )
 
         buttonTexts.forEachIndexed { index, text ->
-            // 判断按钮属于哪一层
             val layer = when (index) {
                 in 0..15 -> 1
                 in 16..31 -> 2
@@ -116,14 +115,9 @@ class CalculatorActivity : AppCompatActivity() {
                 this.text = text
                 textSize = 18f
                 typeface = Typeface.DEFAULT_BOLD
-
-                // 亮蓝色按钮文字
                 setTextColor(0xFF66CCFF.toInt())
-
-               // 黑色按钮背景（边框保持 drawable 原样）
-               setBackgroundResource(
-                    R.drawable.calculator_button_orange
-               )
+                setBackgroundResource(R.drawable.calculator_button_orange)
+                
                 val row = index / 4
                 val col = index % 4
 
@@ -151,11 +145,10 @@ class CalculatorActivity : AppCompatActivity() {
     }
 
     private fun onButtonClick(text: String, layer: Int) {
-        // 🌟 核心修复 1：将有效输入塞入专用的暗号缓存，排除功能控制键
         if (text != "DEL" && text != "OFF") {
             secretBuffer.add(text)
             if (secretBuffer.size > 5) {
-                secretBuffer.removeAt(0) // 队列顶多只存 5 位，超过则移除最旧的一位
+                secretBuffer.removeAt(0)
             }
         }
 
@@ -163,12 +156,10 @@ class CalculatorActivity : AppCompatActivity() {
         inputHistory.add(text)
         recentLayers.add(layer)
 
-        // 最多保留最近3次层级
         if (recentLayers.size > 3) {
             recentLayers.removeAt(0)
         }
 
-        // 每3次触发一次台词逻辑
         if (inputCount % 3 == 0) {
             val layerSet = recentLayers.toSet()
 
@@ -183,10 +174,8 @@ class CalculatorActivity : AppCompatActivity() {
                 else -> "NULL"
             }
 
-            // 清空上一轮输入（这里只影响展示和台词计数，secretBuffer 依然健在）
             inputHistory.clear()
             recentLayers.clear()
-
         } else {
             display.text = inputHistory.joinToString(" ")
         }
@@ -198,7 +187,6 @@ class CalculatorActivity : AppCompatActivity() {
                     inputHistory.removeAt(inputHistory.lastIndex)
                     display.text = inputHistory.joinToString(" ")
                 }
-                // 触发回退时，同步将暗号缓存的最后一位吐出来，保证逻辑一致
                 if (secretBuffer.isNotEmpty()) {
                     secretBuffer.removeAt(secretBuffer.lastIndex)
                 }
@@ -207,20 +195,15 @@ class CalculatorActivity : AppCompatActivity() {
     }
 
     private fun checkSecretSequence(): Boolean {
-        // 🌟 核心修复 2：对比专门记录暗号的 secretBuffer，完美的 5 位对 5 位
         val target = secretSequence.joinToString("").uppercase()
         val current = secretBuffer.joinToString("").uppercase()
         return current == target
     }
 
     private fun enterRealPlayer() {
-        Toast.makeText(
-            this,
-            "验证通过...",
-            Toast.LENGTH_SHORT
-        ).show()
+        Toast.makeText(this, "验证通过...", Toast.LENGTH_SHORT).show()
 
-        // 🌟 注入安全口令 Token，防止越权或直接暴露 Activity
+        // 🌟 核心改动：注入安全口令校验码，只有通过该流转才能进入主界面
         val intent = Intent(this, MainActivity::class.java).apply {
             putExtra("SECURE_ENTRY_TOKEN", "PASSED_FROM_CALCULATOR_2026")
         }
