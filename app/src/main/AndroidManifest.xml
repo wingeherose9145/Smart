@@ -33,10 +33,11 @@
 
         <!-- 视频播放器 -->
         <activity
-            android:name=".PlayerActivity"
-            android:exported="false"
-            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />
+    android:name=".PlayerActivity"
+    android:exported="false"
+    android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+    android:screenOrientation="sensor"
+    android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|uiMode|screenOrientation|smallestScreenSize" />
 
     </application>
 
