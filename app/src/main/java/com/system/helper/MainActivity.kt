@@ -8,7 +8,6 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.smarter.video.databinding.ActivityMainBinding
@@ -19,7 +18,7 @@ private const val PREF_NAME = "video_list"
 private const val KEY_URIS = "uris"
 private const val KEY_NAMES = "names"
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val videoUris = mutableListOf<Uri>()
@@ -34,14 +33,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setupListView()
-        
-        // 重点：每次启动都重新扫描 + 加载
         refreshVideoList()
-        
+
         binding.addButton.setOnClickListener {
             pickVideosLauncher.launch("video/*")
         }
@@ -61,17 +59,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // ==================== 核心刷新方法 ====================
     private fun refreshVideoList() {
         videoUris.clear()
         displayNames.clear()
 
         loadSavedVideoList()
-        scanInternalVideosFolder()   // 强制扫描内部文件夹
+        scanInternalVideosFolder()
 
-        // 去重 + 排序
         val combined = videoUris.zip(displayNames)
-            .distinctBy { it.first.path }           // 按路径去重
+            .distinctBy { it.first.path }
             .sortedBy { it.second.lowercase() }
 
         videoUris.clear()
@@ -82,24 +78,21 @@ class MainActivity : AppCompatActivity() {
         }
 
         adapter.notifyDataSetChanged()
-        saveVideoList()   // 同步保存最新列表
+        saveVideoList()
     }
 
     private fun scanInternalVideosFolder() {
         val videosDir = File(getExternalFilesDir(null), "videos")
-        if (!videosDir.exists() || !videosDir.isDirectory) return
+        if (!videosDir.exists()) return
 
-        val existingPaths = videoUris.mapNotNull { it.path }.toMutableSet()
+        val existingPaths = videoUris.mapNotNull { it.path }.toSet()
 
         videosDir.listFiles()?.sortedByDescending { it.lastModified() }?.forEach { file ->
             if (file.isFile && isVideoFile(file)) {
-                val fileUri = Uri.fromFile(file)
-                val filePath = fileUri.path
-
-                if (filePath != null && filePath !in existingPaths) {
-                    videoUris.add(fileUri)
+                val uri = Uri.fromFile(file)
+                if (uri.path !in existingPaths) {
+                    videoUris.add(uri)
                     displayNames.add(file.name)
-                    existingPaths.add(filePath)
                 }
             }
         }
@@ -110,7 +103,6 @@ class MainActivity : AppCompatActivity() {
         return ext in listOf("mp4", "mkv", "mov", "avi", "wmv", "flv", "webm", "3gp", "m4v", "ts")
     }
 
-    // ====================== 导入、删除、保存等保持不变 ======================
     private fun importVideos(uris: List<Uri>) {
         Thread {
             var added = 0
@@ -162,9 +154,7 @@ class MainActivity : AppCompatActivity() {
     private fun deleteVideo(position: Int) {
         try {
             val uri = videoUris[position]
-            if (uri.scheme == "file") {
-                File(uri.path!!).delete()
-            }
+            if (uri.scheme == "file") File(uri.path!!).delete()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -179,7 +169,7 @@ class MainActivity : AppCompatActivity() {
     private fun showDeleteDialog(position: Int) {
         AlertDialog.Builder(this)
             .setTitle("删除视频")
-            .setMessage("确认要永久删除该视频文件吗？")
+            .setMessage("确认要永久删除该视频吗？")
             .setPositiveButton("删除") { _, _ -> deleteVideo(position) }
             .setNegativeButton("取消", null)
             .show()
