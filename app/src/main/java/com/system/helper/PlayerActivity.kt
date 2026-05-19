@@ -41,6 +41,7 @@ class PlayerActivity : BaseActivity() {
     private val updateProgressRunnable = object : Runnable {
         override fun run() {
             val currentPlayer = player
+            // 标准写法：直接使用 View.VISIBLE 判断
             if (currentPlayer != null && currentPlayer.isPlaying && binding.seekBar.visibility == View.VISIBLE) {
                 if (currentPlayer.duration > 0) {
                     binding.seekBar.max = currentPlayer.duration.toInt()
