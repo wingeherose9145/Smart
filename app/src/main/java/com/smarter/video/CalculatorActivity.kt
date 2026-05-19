@@ -122,7 +122,7 @@ class CalculatorActivity : AppCompatActivity() {
 
                // 黑色按钮背景（边框保持 drawable 原样）
                setBackgroundResource(
-                   R.drawable.calculator_button_black
+                    R.drawable.calculator_button_orange
                )
                 val row = index / 4
                 val col = index % 4
