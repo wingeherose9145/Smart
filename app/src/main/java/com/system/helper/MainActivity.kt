@@ -24,14 +24,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: ArrayAdapter<String>
     private lateinit var addButton: Button
 
-    // 🌟 核心改进 1：利用系统原生选择器，无需任何高危存储权限，支持多选
+    // 利用系统原生选择器，无需任何高危存储权限，支持多选
     private val pickVideosLauncher = registerForActivityResult(
         ActivityResultContracts.GetMultipleContents()
     ) { uris: List<Uri> ->
         if (uris.isNotEmpty()) {
             Toast.makeText(this, "正在后台导入选中的 ${uris.size} 个视频，请稍候...", Toast.LENGTH_SHORT).show()
 
-            // 🌟 核心改进 2：开辟子线程进行文件拷贝，防止主线程卡死（ANR）
+            // 开辟子线程进行文件拷贝，防止主线程卡死（ANR）
             Thread {
                 var addedCount = 0
                 uris.forEach { sourceUri ->
@@ -58,7 +58,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // 🌟 核心改进 3：取消原先 onCreate 里的直接重定向拦截，允许进入主界面管理视频
+        // 🌟 安全拦截：一进来首先核对是否持有计算器的安全暗号
+        if (intent.getStringExtra("SECURE_ENTRY_TOKEN") != "PASSED_FROM_CALCULATOR_2026") {
+            redirectToCalculator()
+            return
+        }
+
         setContentView(R.layout.activity_main)
 
         listView = findViewById(R.id.videoListView)
@@ -85,7 +90,7 @@ class MainActivity : AppCompatActivity() {
                     .setTitle("删除视频")
                     .setMessage("确认要从播放列表中移除该视频吗？")
                     .setPositiveButton("移除") { _, _ ->
-                        // 🌟 核心改进 4：顺便删除内部存储中的物理文件，防止流氓占用手机空间
+                        // 顺便删除内部存储中的物理文件，防止流氓占用手机空间
                         deleteInternalFile(videoUris[position])
                         
                         videoUris.removeAt(position)
@@ -102,6 +107,83 @@ class MainActivity : AppCompatActivity() {
 
         // 页面打开时自动加载之前保存过的视频
         loadSavedVideoList()
+
+        // 🌟 自动扫描 Assets 资产目录，同步 GitHub Actions 打进来的视频（文件移动方式）
+        autoSyncAssetsVideos()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // 🌟 强效安全锁：确保返回或从后台回来时，若没有携带正确的 Token 则直接清除
+        if (intent.getStringExtra("SECURE_ENTRY_TOKEN") != "PASSED_FROM_CALCULATOR_2026") {
+            redirectToCalculator()
+        }
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        // 🌟 只要切到后台再回来（比如点击了最近任务卡片），强制踢回计算器重新输入密码
+        redirectToCalculator()
+    }
+
+    private fun redirectToCalculator() {
+        val intent = Intent(this, CalculatorActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        startActivity(intent)
+        finish()
+    }
+
+    // 🌟 核心新增：自动将 GitHub Actions 打包进 assets/videos 的视频静默移动/同步到播放目录
+    private fun autoSyncAssetsVideos() {
+        Thread {
+            try {
+                val assetManager = assets
+                // 获取 assets/videos 目录下的所有视频文件列表
+                val files = assetManager.list("videos") ?: return@Thread
+                val targetDir = File(getExternalFilesDir(null), "videos")
+                if (!targetDir.exists()) {
+                    targetDir.mkdirs()
+                }
+
+                var needUpdateList = false
+
+                files.forEach { fileName ->
+                    // 保持原文件名存入
+                    val targetFile = File(targetDir, fileName)
+                    
+                    // 如果文件不存在，说明是自动化流程新打入的视频，采用流复制移动存入
+                    if (!targetFile.exists()) {
+                        assetManager.open("videos/$fileName").use { inputStream ->
+                            FileOutputStream(targetFile).use { outputStream ->
+                                inputStream.copyTo(outputStream)
+                            }
+                        }
+                        needUpdateList = true
+                    }
+                }
+
+                // 如果有新文件移入，重新加载物理目录文件刷新列表
+                if (needUpdateList) {
+                    runOnUiThread {
+                        videoUris.clear()
+                        displayNames.clear()
+
+                        targetDir.listFiles()?.forEach { file ->
+                            videoUris.add(Uri.fromFile(file))
+                            // 移除可能存在的系统生成的时间戳前缀，美化展示
+                            val cleanName = file.name.substringAfter("_")
+                            displayNames.add(cleanName)
+                        }
+
+                        adapter.notifyDataSetChanged()
+                        saveVideoList()
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }.start()
     }
 
     // 异步安全地将视频复制到App私有目录
@@ -200,6 +282,8 @@ class MainActivity : AppCompatActivity() {
     // 唤起播放器Activity
     private fun startPlayerActivity(position: Int) {
         val intent = Intent(this, PlayerActivity::class.java).apply {
+            // 🌟 传递入口安全验证 Token
+            putExtra("SECURE_ENTRY_TOKEN", "PASSED_FROM_CALCULATOR_2026")
             putExtra("video_uri", videoUris[position].toString())
             putExtra("current_index", position)
             putStringArrayListExtra("video_list", ArrayList(videoUris.map { it.toString() }))
