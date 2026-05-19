@@ -1,231 +1,263 @@
 package com.smarter.video
 
-import android.content.Intent
-import android.graphics.Typeface
+import android.content.pm.ActivityInfo
+import android.media.MediaMetadataRetriever
+import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.View
-import android.widget.Button
-import android.widget.GridLayout
-import android.widget.TextView
+import android.view.WindowManager
+import android.widget.SeekBar
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
+import com.smarter.video.databinding.ActivityPlayerBinding
+import kotlin.math.abs
 
-class CalculatorActivity : AppCompatActivity() {
+private const val AUTO_HIDE_DELAY = 3000L
+private const val SEEK_UPDATE_INTERVAL = 500L
 
-    private lateinit var display: TextView
+class PlayerActivity : BaseActivity() {
 
-    private var inputCount = 0
+    private lateinit var binding: ActivityPlayerBinding
+    private var player: ExoPlayer? = null
+    private var videoUris = arrayListOf<String>()
+    private var currentIndex = 0
 
-    // 最近输入内容（用于UI显示和层级计算，每3次会清空一次）
-    private val inputHistory = mutableListOf<String>()
+    private val handler = Handler(Looper.getMainLooper())
+    private lateinit var gestureDetector: GestureDetector
 
-    // 最近输入层级
-    private val recentLayers = mutableListOf<Int>()
+    // 控制进度条自动隐藏的任务
+    private val hideSeekBarRunnable = Runnable {
+        binding.seekBar.visibility = View.GONE
+    }
 
-    // 🌟 核心修复：独立出来的暗号专用缓存，不受3次清空影响，始终只保留最近5次有效按键
-    private val secretBuffer = mutableListOf<String>()
-
-    // 动态内容库
-    private lateinit var quotesA: List<String>
-    private lateinit var quotesB: List<String>
-    private lateinit var quotesC: List<String>
-    private lateinit var quotesD: List<String>
-    private lateinit var quotesE: List<String>
-    private lateinit var quotesF: List<String>
-    private lateinit var quotesG: List<String>
-
-    // 隐藏入口序列
-    private val secretSequence = listOf(
-        "∡R",
-        "φ",
-        "%",
-        "∞",
-        "xʸ"
-    )
+    // 轮询更新进度条界面的任务
+    private val updateProgressRunnable = object : Runnable {
+        override fun run() {
+            val currentPlayer = player
+            if (currentPlayer != null && currentPlayer.isPlaying && binding.seekBar.visibility == View.getWrappedVisibility(View.VISIBLE)) {
+                if (currentPlayer.duration > 0) {
+                    binding.seekBar.max = currentPlayer.duration.toInt()
+                    binding.seekBar.progress = currentPlayer.currentPosition.toInt()
+                }
+            }
+            // 只要没有销毁，就持续保持轮询
+            handler.postDelayed(this, SEEK_UPDATE_INTERVAL)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        window.decorView.systemUiVisibility = (
-                View.SYSTEM_UI_FLAG_FULLSCREEN
-                        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                )
+        // 基础全屏与防截屏/防录屏安全设置
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
 
-        setContentView(R.layout.activity_calculator)
+        binding = ActivityPlayerBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        display = findViewById(R.id.tv_display)
+        // 默认隐藏进度条
+        binding.seekBar.visibility = View.GONE
 
-        // 加载内容库
-        quotesA = loadQuotes("a.txt")
-        quotesB = loadQuotes("b.txt")
-        quotesC = loadQuotes("c.txt")
-        quotesD = loadQuotes("d.txt")
-        quotesE = loadQuotes("e.txt")
-        quotesF = loadQuotes("f.txt")
-        quotesG = loadQuotes("g.txt")
+        // 初始化数据源
+        videoUris = intent.getStringArrayListExtra("video_list") ?: arrayListOf()
+        currentIndex = intent.getIntExtra("current_index", 0)
 
-        setupLargeKeyboard()
-    }
-
-    // 读取 assets 内容库
-    private fun loadQuotes(fileName: String): List<String> {
-        return try {
-            assets.open(fileName)
-                .bufferedReader()
-                .readLines()
-                .filter { it.isNotBlank() }
-        } catch (e: Exception) {
-            listOf("LOAD ERROR")
+        if (videoUris.isEmpty()) {
+            Toast.makeText(this, "没有视频可播放", Toast.LENGTH_SHORT).show()
+            finish()
+            return
         }
+
+        initPlayer()
+        setupGestureAndClick()
+        setupSeekBar()
+        
+        playCurrentVideo()
     }
 
-    private fun setupLargeKeyboard() {
-        val grid = findViewById<GridLayout>(R.id.grid_buttons)
-        grid.removeAllViews()
-
-        val buttonTexts = listOf(
-            // ===== 第一层 =====
-            "≝", "Ψ", "φ", "π",
-            "♄", "♃", "☾ˣ", "%",
-            "Σ", "∫", "∞", "Ω",
-            "ℒ(θ)", "√", "≈", "≠",
-
-            // ===== 第二层 =====
-            "☉", "θ", "∈", "λ",
-            "ℳ", "∂", "ℵ", "x̄",
-            "∀", "@", "ε₀", "∅",
-            "ℒ", "ℋ", "∨", "ℐ",
-
-            // ===== 第三层 =====
-            "|x|", "σ²", "H₀", "xʸ",
-            "∡R", "℃", "∉", "∩",
-            "⇔", "☄", "⊕", "∃",
-            "OFF", "⊂", "⇌", "Γ"
-        )
-
-        buttonTexts.forEachIndexed { index, text ->
-            // 判断按钮属于哪一层
-            val layer = when (index) {
-                in 0..15 -> 1
-                in 16..31 -> 2
-                else -> 3
-            }
-
-            val btn = Button(this).apply {
-                this.text = text
-                textSize = 18f
-                typeface = Typeface.DEFAULT_BOLD
-
-                // 亮蓝色按钮文字
-                setTextColor(0xFF66CCFF.toInt())
-
-               // 黑色按钮背景（边框保持 drawable 原样）
-               setBackgroundResource(
-                    R.drawable.calculator_button_orange
-               )
-                val row = index / 4
-                val col = index % 4
-
-                layoutParams = GridLayout.LayoutParams().apply {
-                    width = 0
-                    height = 0
-                    rowSpec = GridLayout.spec(row, 1f)
-                    columnSpec = GridLayout.spec(col, 1f)
-                    setMargins(6, 6, 6, 6)
-                }
-
-                setOnClickListener {
-                    onButtonClick(text, layer)
-                }
-
-                setOnLongClickListener {
-                    if (text == "|x|" && checkSecretSequence()) {
-                        enterRealPlayer()
+    private fun initPlayer() {
+        player = ExoPlayer.Builder(this).build().apply {
+            binding.playerView.player = this
+            binding.playerView.useController = false // 完全使用自定义 UI
+            
+            addListener(object : Player.Listener {
+                override fun onPlaybackStateChanged(state: Int) {
+                    if (state == Player.STATE_ENDED) {
+                        playNextVideo()
                     }
-                    true
                 }
-            }
-            grid.addView(btn)
+
+                override fun onIsPlayingChanged(isPlaying: Boolean) {
+                    updateSeekBarVisibility(isPlaying)
+                }
+
+                override fun onPlayerError(error: PlaybackException) {
+                    Toast.makeText(this@PlayerActivity, "播放错误: ${error.message}", Toast.LENGTH_SHORT).show()
+                    playNextVideo()
+                }
+            })
         }
     }
 
-    private fun onButtonClick(text: String, layer: Int) {
-        // 🌟 核心修复 1：将有效输入塞入专用的暗号缓存，排除功能控制键
-        if (text != "DEL" && text != "OFF") {
-            secretBuffer.add(text)
-            if (secretBuffer.size > 5) {
-                secretBuffer.removeAt(0) // 队列顶多只存 5 位，超过则移除最旧的一位
-            }
+    private fun updateSeekBarVisibility(isPlaying: Boolean) {
+        handler.removeCallbacks(hideSeekBarRunnable)
+        binding.seekBar.visibility = View.VISIBLE
+        // 如果正在播放，则开启 3 秒后自动隐藏定时器；暂停时则持久显示
+        if (isPlaying) {
+            handler.postDelayed(hideSeekBarRunnable, AUTO_HIDE_DELAY)
         }
+    }
 
-        inputCount++
-        inputHistory.add(text)
-        recentLayers.add(layer)
-
-        // 最多保留最近3次层级
-        if (recentLayers.size > 3) {
-            recentLayers.removeAt(0)
-        }
-
-        // 每3次触发一次台词逻辑
-        if (inputCount % 3 == 0) {
-            val layerSet = recentLayers.toSet()
-
-            display.text = when (layerSet) {
-                setOf(1) -> quotesA.random()
-                setOf(2) -> quotesB.random()
-                setOf(3) -> quotesC.random()
-                setOf(1, 2) -> quotesD.random()
-                setOf(1, 3) -> quotesE.random()
-                setOf(2, 3) -> quotesF.random()
-                setOf(1, 2, 3) -> quotesG.random()
-                else -> "NULL"
+    private fun setupGestureAndClick() {
+        gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
+            // 响应左右轻扫手势（切换上下首视频）
+            override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+                if (abs(velocityX) > 800 && abs(velocityX) > abs(velocityY) * 1.5f) {
+                    if (velocityX > 0) playPreviousVideo() else playNextVideo()
+                    return true
+                }
+                return false
             }
 
-            // 清空上一轮输入（这里只影响展示和台词计数，secretBuffer 依然健在）
-            inputHistory.clear()
-            recentLayers.clear()
+            // 完美收拢：将单击屏幕的交互（显示/隐藏进度条、或者播放/暂停）全部放在此处调度
+            override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                val currentPlayer = player ?: return false
+                if (currentPlayer.isPlaying) {
+                    // 如果正在播放，单击用于切换进度条的显示与隐藏状态
+                    if (binding.seekBar.visibility == View.VISIBLE) {
+                        binding.seekBar.visibility = View.GONE
+                        handler.removeCallbacks(hideSeekBarRunnable)
+                    } else {
+                        binding.seekBar.visibility = View.VISIBLE
+                        handler.postDelayed(hideSeekBarRunnable, AUTO_HIDE_DELAY)
+                    }
+                } else {
+                    // 如果是暂停状态，单击直接恢复播放
+                    binding.seekBar.visibility = View.VISIBLE
+                    currentPlayer.play()
+                }
+                return true
+            }
+        })
 
+        // 将触摸流代理给 GestureDetector
+        binding.playerView.setOnTouchListener { v, event ->
+            gestureDetector.onTouchEvent(event)
+            // 如果手势没有消费掉，且属于点击抬起事件，用于触发暂停逻辑
+            if (event.action == MotionEvent.ACTION_UP && !gestureDetector.onTouchEvent(event)) {
+                val currentPlayer = player
+                if (currentPlayer != null && currentPlayer.isPlaying) {
+                    currentPlayer.pause()
+                }
+            }
+            true
+        }
+    }
+
+    private fun setupSeekBar() {
+        // 启动进度条 UI 定时轮询更新
+        handler.post(updateProgressRunnable)
+
+        binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    player?.seekTo(progress.toLong())
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                // 用户开始拖动时，取消自动隐藏，防止拖动到一半 UI 消失
+                handler.removeCallbacks(hideSeekBarRunnable)
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                // 拖动结束后，如果仍在播放，恢复 3 秒自动隐藏
+                if (player?.isPlaying == true) {
+                    handler.postDelayed(hideSeekBarRunnable, AUTO_HIDE_DELAY)
+                }
+            }
+        })
+    }
+
+    private fun playCurrentVideo() {
+        val currentPlayer = player ?: return
+        try {
+            val uri = Uri.parse(videoUris[currentIndex])
+            setVideoOrientation(uri)
+
+            currentPlayer.stop()
+            currentPlayer.setMediaItem(MediaItem.fromUri(uri))
+            currentPlayer.prepare()
+            currentPlayer.play()
+        } catch (e: Exception) {
+            Toast.makeText(this, "播放失败: ${e.message}", Toast.LENGTH_SHORT).show()
+            playNextVideo()
+        }
+    }
+
+    private fun setVideoOrientation(uri: Uri) {
+        try {
+            MediaMetadataRetriever().use { retriever ->
+                retriever.setDataSource(this, uri)
+                val width = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
+                val height = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
+
+                requestedOrientation = if (height > width) {
+                    ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                } else {
+                    ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                }
+            }
+        } catch (e: Exception) {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
+        }
+    }
+
+    private fun playNextVideo() {
+        if (currentIndex < videoUris.size - 1) {
+            currentIndex++
+            playCurrentVideo()
         } else {
-            display.text = inputHistory.joinToString(" ")
-        }
-
-        when (text) {
-            "OFF" -> finish()
-            "DEL" -> {
-                if (inputHistory.isNotEmpty()) {
-                    inputHistory.removeAt(inputHistory.lastIndex)
-                    display.text = inputHistory.joinToString(" ")
-                }
-                // 触发回退时，同步将暗号缓存的最后一位吐出来，保证逻辑一致
-                if (secretBuffer.isNotEmpty()) {
-                    secretBuffer.removeAt(secretBuffer.lastIndex)
-                }
-            }
+            finish()
         }
     }
 
-    private fun checkSecretSequence(): Boolean {
-        // 🌟 核心修复 2：对比专门记录暗号的 secretBuffer，完美的 5 位对 5 位
-        val target = secretSequence.joinToString("").uppercase()
-        val current = secretBuffer.joinToString("").uppercase()
-        return current == target
+    private fun playPreviousVideo() {
+        if (currentIndex > 0) {
+            currentIndex--
+            playCurrentVideo()
+        }
     }
 
-    private fun enterRealPlayer() {
-        Toast.makeText(
-            this,
-            "验证通过...",
-            Toast.LENGTH_SHORT
-        ).show()
+    override fun onPause() {
+        super.onPause()
+        player?.pause()
+        // 页面不可见时，移除所有后台异步通知，彻底切断内存泄漏隐患
+        handler.removeCallbacks(updateProgressRunnable)
+        handler.removeCallbacks(hideSeekBarRunnable)
+    }
 
-        startActivity(
-            Intent(
-                this,
-                MainActivity::class.java
-            )
-        )
-        finish()
+    override fun onResume() {
+        super.onResume()
+        // 页面恢复可见时，重新拉起进度条轮询任务
+        handler.post(updateProgressRunnable)
+    }
+
+    override fun onDestroy() {
+        handler.removeCallbacksAndMessages(null)
+        player?.release()
+        player = null
+        super.onDestroy()
     }
 }
+
+// 辅助扩展：修复原逻辑中 createView 的兼容性替代方案
+private fun View.Companion.getWrappedVisibility(target: Int): Int = target
