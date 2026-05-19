@@ -12,7 +12,6 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.SeekBar
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -23,7 +22,7 @@ import com.smarter.video.databinding.ActivityPlayerBinding
 private const val AUTO_HIDE_DELAY = 3000L
 private const val SEEK_UPDATE_INTERVAL = 500L
 
-class PlayerActivity : AppCompatActivity() {
+class PlayerActivity : BaseActivity() {
 
     private lateinit var binding: ActivityPlayerBinding
     private lateinit var player: ExoPlayer
@@ -34,9 +33,7 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var gestureDetector: GestureDetector
 
     private val hideSeekBarRunnable = Runnable {
-        if (player.isPlaying) {
-            binding.seekBar.visibility = View.GONE
-        }
+        if (player.isPlaying) binding.seekBar.visibility = View.GONE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,9 +72,7 @@ class PlayerActivity : AppCompatActivity() {
     private fun setupPlayerListener() {
         player.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(state: Int) {
-                if (state == Player.STATE_ENDED) {
-                    playNextVideo()
-                }
+                if (state == Player.STATE_ENDED) playNextVideo()
             }
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
@@ -103,12 +98,7 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun setupGestureAndClick() {
         gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
-            override fun onFling(
-                e1: MotionEvent?,
-                e2: MotionEvent,
-                velocityX: Float,
-                velocityY: Float
-            ): Boolean {
+            override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
                 if (kotlin.math.abs(velocityX) > 800 && kotlin.math.abs(velocityX) > kotlin.math.abs(velocityY) * 1.5f) {
                     if (velocityX > 0) playPreviousVideo() else playNextVideo()
                     return true
@@ -136,9 +126,7 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         binding.playerView.setOnClickListener {
-            if (player.isPlaying) {
-                player.pause()
-            } else {
+            if (player.isPlaying) player.pause() else {
                 binding.seekBar.visibility = View.VISIBLE
                 player.play()
             }
@@ -166,9 +154,7 @@ class PlayerActivity : AppCompatActivity() {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                if (player.isPlaying) {
-                    handler.postDelayed(hideSeekBarRunnable, AUTO_HIDE_DELAY)
-                }
+                if (player.isPlaying) handler.postDelayed(hideSeekBarRunnable, AUTO_HIDE_DELAY)
             }
         })
     }
@@ -192,7 +178,6 @@ class PlayerActivity : AppCompatActivity() {
         try {
             val retriever = MediaMetadataRetriever()
             retriever.setDataSource(this, uri)
-
             val width = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
             val height = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
 
