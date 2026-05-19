@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
-import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -30,9 +29,7 @@ class MainActivity : AppCompatActivity() {
     private val pickVideosLauncher = registerForActivityResult(
         ActivityResultContracts.GetMultipleContents()
     ) { uris ->
-        if (!uris.isNullOrEmpty()) {
-            importVideos(uris)
-        }
+        if (!uris.isNullOrEmpty()) importVideos(uris)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,8 +38,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupListView()
-        loadAndScanVideos()
-
+        
+        // 重点：每次启动都重新扫描 + 加载
+        refreshVideoList()
+        
         binding.addButton.setOnClickListener {
             pickVideosLauncher.launch("video/*")
         }
@@ -53,51 +52,54 @@ class MainActivity : AppCompatActivity() {
         binding.videoListView.adapter = adapter
 
         binding.videoListView.setOnItemClickListener { _, _, position, _ ->
-            if (position in videoUris.indices) {
-                startPlayerActivity(position)
-            }
+            if (position in videoUris.indices) startPlayerActivity(position)
         }
 
         binding.videoListView.setOnItemLongClickListener { _, _, position, _ ->
-            if (position in videoUris.indices) {
-                showDeleteDialog(position)
-            }
+            if (position in videoUris.indices) showDeleteDialog(position)
             true
         }
     }
 
-    private fun loadAndScanVideos() {
+    // ==================== 核心刷新方法 ====================
+    private fun refreshVideoList() {
         videoUris.clear()
         displayNames.clear()
 
         loadSavedVideoList()
-        scanInternalVideosFolder()
+        scanInternalVideosFolder()   // 强制扫描内部文件夹
 
-        // 按文件名排序
-        val sorted = videoUris.zip(displayNames).sortedBy { it.second.lowercase() }
+        // 去重 + 排序
+        val combined = videoUris.zip(displayNames)
+            .distinctBy { it.first.path }           // 按路径去重
+            .sortedBy { it.second.lowercase() }
+
         videoUris.clear()
         displayNames.clear()
-        sorted.forEach { (uri, name) ->
+        combined.forEach { (uri, name) ->
             videoUris.add(uri)
             displayNames.add(name)
         }
 
         adapter.notifyDataSetChanged()
-        saveVideoList()
+        saveVideoList()   // 同步保存最新列表
     }
 
     private fun scanInternalVideosFolder() {
         val videosDir = File(getExternalFilesDir(null), "videos")
-        if (!videosDir.exists()) return
+        if (!videosDir.exists() || !videosDir.isDirectory) return
 
-        val existingPaths = videoUris.mapNotNull { it.path }.toSet()
+        val existingPaths = videoUris.mapNotNull { it.path }.toMutableSet()
 
-        videosDir.listFiles()?.forEach { file ->
+        videosDir.listFiles()?.sortedByDescending { it.lastModified() }?.forEach { file ->
             if (file.isFile && isVideoFile(file)) {
-                val uri = Uri.fromFile(file)
-                if (uri.path !in existingPaths) {
-                    videoUris.add(uri)
+                val fileUri = Uri.fromFile(file)
+                val filePath = fileUri.path
+
+                if (filePath != null && filePath !in existingPaths) {
+                    videoUris.add(fileUri)
                     displayNames.add(file.name)
+                    existingPaths.add(filePath)
                 }
             }
         }
@@ -105,9 +107,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun isVideoFile(file: File): Boolean {
         val ext = file.extension.lowercase()
-        return ext in listOf("mp4", "mkv", "mov", "avi", "wmv", "flv", "webm", "3gp", "m4v")
+        return ext in listOf("mp4", "mkv", "mov", "avi", "wmv", "flv", "webm", "3gp", "m4v", "ts")
     }
 
+    // ====================== 导入、删除、保存等保持不变 ======================
     private fun importVideos(uris: List<Uri>) {
         Thread {
             var added = 0
@@ -115,8 +118,7 @@ class MainActivity : AppCompatActivity() {
 
             uris.forEach { sourceUri ->
                 val name = getFileNameFromUri(sourceUri)
-                val safeName = "${System.currentTimeMillis()}_$name"
-                val targetFile = File(videosDir, safeName)
+                val targetFile = File(videosDir, "${System.currentTimeMillis()}_$name")
 
                 try {
                     contentResolver.openInputStream(sourceUri)?.use { input ->
@@ -124,9 +126,8 @@ class MainActivity : AppCompatActivity() {
                             input.copyTo(output)
                         }
                     }
-                    val newUri = Uri.fromFile(targetFile)
                     runOnUiThread {
-                        videoUris.add(newUri)
+                        videoUris.add(Uri.fromFile(targetFile))
                         displayNames.add(targetFile.name)
                         adapter.notifyDataSetChanged()
                     }
@@ -178,7 +179,7 @@ class MainActivity : AppCompatActivity() {
     private fun showDeleteDialog(position: Int) {
         AlertDialog.Builder(this)
             .setTitle("删除视频")
-            .setMessage("确认要永久删除该视频吗？")
+            .setMessage("确认要永久删除该视频文件吗？")
             .setPositiveButton("删除") { _, _ -> deleteVideo(position) }
             .setNegativeButton("取消", null)
             .show()
