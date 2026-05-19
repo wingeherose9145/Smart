@@ -19,9 +19,8 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import com.smarter.video.databinding.ActivityPlayerBinding
 
-// 常量
 private const val AUTO_HIDE_DELAY = 3000L
-private const val SEEK_BAR_UPDATE_INTERVAL = 500L
+private const val SEEK_UPDATE_INTERVAL = 500L
 
 class PlayerActivity : AppCompatActivity() {
 
@@ -35,14 +34,16 @@ class PlayerActivity : AppCompatActivity() {
 
     // 统一管理 SeekBar 可见性
     private val hideSeekBarRunnable = Runnable {
-        if (player.isPlaying) binding.seekBar.visibility = View.GONE
+        if (player.isPlaying) {
+            binding.seekBar.visibility = View.GONE
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 方向切换时不重建 Activity
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR // 推荐使用 SENSOR
+        // 解决方向切换重建 Activity 问题
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
 
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
@@ -60,6 +61,7 @@ class PlayerActivity : AppCompatActivity() {
         currentIndex = intent.getIntExtra("current_index", 0)
 
         if (videoUris.isEmpty()) {
+            Toast.makeText(this, "没有视频可播放", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -74,9 +76,8 @@ class PlayerActivity : AppCompatActivity() {
     private fun setupPlayerListener() {
         player.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(state: Int) {
-                if (state == Player.STATE_ENDED) playNextVideo()
-                else if (state == Player.STATE_IDLE || state == Player.STATE_BUFFERING) {
-                    // 可扩展错误处理
+                if (state == Player.STATE_ENDED) {
+                    playNextVideo()
                 }
             }
 
@@ -91,28 +92,142 @@ class PlayerActivity : AppCompatActivity() {
         })
     }
 
-    // ==================== 统一 SeekBar 可见性管理 ====================
+    // ==================== 统一 SeekBar 可见性逻辑 ====================
     private fun updateSeekBarVisibility(isPlaying: Boolean) {
         handler.removeCallbacks(hideSeekBarRunnable)
         if (isPlaying) {
+            binding.seekBar.visibility = View.VISIBLE
             handler.postDelayed(hideSeekBarRunnable, AUTO_HIDE_DELAY)
-            binding.seekBar.visibility = View.VISIBLE // 先显示再自动隐藏
         } else {
             binding.seekBar.visibility = View.VISIBLE
         }
     }
 
     private fun setupGestureAndClick() {
-        // Gesture + Click 逻辑（同之前优化版）
-        // ...（可直接使用上一个版本的 setupGestureDetector 内容）
+        gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
+            override fun onFling(
+                e1: MotionEvent?,
+                e2: MotionEvent,
+                velocityX: Float,
+                velocityY: Float
+            ): Boolean {
+                if (kotlin.math.abs(velocityX) > 800 && kotlin.math.abs(velocityX) > kotlin.math.abs(velocityY) * 1.5f) {
+                    if (velocityX > 0) playPreviousVideo() else playNextVideo()
+                    return true
+                }
+                return false
+            }
+
+            override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                if (player.isPlaying) {
+                    if (binding.seekBar.visibility == View.VISIBLE) {
+                        binding.seekBar.visibility = View.GONE
+                    } else {
+                        binding.seekBar.visibility = View.VISIBLE
+                        handler.removeCallbacks(hideSeekBarRunnable)
+                        handler.postDelayed(hideSeekBarRunnable, AUTO_HIDE_DELAY)
+                    }
+                }
+                return true
+            }
+        })
+
+        binding.playerView.setOnTouchListener { _, event ->
+            gestureDetector.onTouchEvent(event)
+            false
+        }
+
+        // 点击屏幕：播放/暂停
+        binding.playerView.setOnClickListener {
+            if (player.isPlaying) {
+                player.pause()
+            } else {
+                binding.seekBar.visibility = View.VISIBLE
+                player.play()
+            }
+        }
     }
 
-    private fun setupSeekBar() { /* 同之前 */ }
+    private fun setupSeekBar() {
+        // 进度条定时刷新
+        handler.post(object : Runnable {
+            override fun run() {
+                if (binding.seekBar.visibility == View.VISIBLE && player.duration > 0) {
+                    binding.seekBar.max = player.duration.toInt()
+                    binding.seekBar.progress = player.currentPosition.toInt()
+                }
+                handler.postDelayed(this, SEEK_UPDATE_INTERVAL)
+            }
+        })
 
-    private fun playCurrentVideo() { /* 同之前，保持 try-catch */ }
+        binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    player.seekTo(progress.toLong())
+                }
+            }
 
-    private fun playNextVideo() { /* 同之前 */ }
-    private fun playPreviousVideo() { /* 同之前 */ }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                handler.removeCallbacks(hideSeekBarRunnable)
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                if (player.isPlaying) {
+                    handler.postDelayed(hideSeekBarRunnable, AUTO_HIDE_DELAY)
+                }
+            }
+        })
+    }
+
+    private fun playCurrentVideo() {
+        try {
+            val uri = Uri.parse(videoUris[currentIndex])
+            setVideoOrientation(uri)
+
+            player.stop()
+            player.setMediaItem(MediaItem.fromUri(uri))
+            player.prepare()
+            player.play()
+        } catch (e: Exception) {
+            Toast.makeText(this, "播放失败: ${e.message}", Toast.LENGTH_SHORT).show()
+            playNextVideo()
+        }
+    }
+
+    private fun setVideoOrientation(uri: Uri) {
+        try {
+            val retriever = MediaMetadataRetriever()
+            retriever.setDataSource(this, uri)
+
+            val width = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull() ?: 0
+            val height = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
+
+            requestedOrientation = if (height > width) {
+                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            } else {
+                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            }
+            retriever.release()
+        } catch (e: Exception) {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
+        }
+    }
+
+    private fun playNextVideo() {
+        if (currentIndex < videoUris.size - 1) {
+            currentIndex++
+            playCurrentVideo()
+        } else {
+            finish()
+        }
+    }
+
+    private fun playPreviousVideo() {
+        if (currentIndex > 0) {
+            currentIndex--
+            playCurrentVideo()
+        }
+    }
 
     override fun onPause() {
         super.onPause()
