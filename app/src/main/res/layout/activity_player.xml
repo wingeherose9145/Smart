@@ -10,16 +10,45 @@
         android:layout_height="match_parent"
         android:keepScreenOn="true" />
 
-    <SeekBar
-        android:id="@+id/seekBar"
+    <LinearLayout
+        android:id="@+id/controllerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:paddingBottom="16dp"
-        android:progressBackgroundTint="#22FFFFFF"
-        android:progressTint="#88FFFFFF"
-        android:thumbTint="#AAFFFFFF" />
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_current_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp" />
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:progressBackgroundTint="#22FFFFFF"
+            android:progressTint="#88FFFFFF"
+            android:thumbTint="#AAFFFFFF" />
+
+        <TextView
+            android:id="@+id/tv_total_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp" />
+            
+    </LinearLayout>
 
 </FrameLayout>
