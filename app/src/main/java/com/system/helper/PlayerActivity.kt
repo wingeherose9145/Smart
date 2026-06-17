@@ -11,19 +11,28 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
+import android.widget.LinearLayout // 🌟 新增
 import android.widget.SeekBar
+import android.widget.TextView // 🌟 新增
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import java.util.Formatter // 🌟 新增
+import java.util.Locale // 🌟 新增
 
 class PlayerActivity : AppCompatActivity() {
 
     private lateinit var player: ExoPlayer
     private lateinit var playerView: PlayerView
     private lateinit var seekBar: SeekBar
+    
+    // 🌟 新增：整个控制布局与两个时间框
+    private lateinit var controllerLayout: LinearLayout
+    private lateinit var tvCurrentTime: TextView
+    private lateinit var tvTotalDuration: TextView
 
     private lateinit var videoUris: ArrayList<String>
     private var currentIndex = 0
@@ -31,9 +40,10 @@ class PlayerActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var gestureDetector: GestureDetector
 
+    // 🌟 修改：隐藏控制条时，整体隐藏整个栏目
     private val hideSeekBarRunnable = Runnable {
         if (player.isPlaying) {
-            seekBar.visibility = View.GONE
+            controllerLayout.visibility = View.GONE
         }
     }
 
@@ -60,8 +70,14 @@ class PlayerActivity : AppCompatActivity() {
 
         playerView = findViewById(R.id.playerView)
         seekBar = findViewById(R.id.seekBar)
+        
+        // 🌟 新增：绑定时间控件和容器
+        controllerLayout = findViewById(R.id.controllerLayout)
+        tvCurrentTime = findViewById(R.id.tv_current_time)
+        tvTotalDuration = findViewById(R.id.tv_total_duration)
 
-        seekBar.visibility = View.GONE
+        // 初始隐藏整体控制栏
+        controllerLayout.visibility = View.GONE
 
         player = ExoPlayer.Builder(this).build()
         playerView.player = player
@@ -92,7 +108,7 @@ class PlayerActivity : AppCompatActivity() {
                     handler.postDelayed(hideSeekBarRunnable, 3000)
                 } else {
                     handler.removeCallbacks(hideSeekBarRunnable)
-                    seekBar.visibility = View.VISIBLE
+                    controllerLayout.visibility = View.VISIBLE
                 }
             }
         })
@@ -103,7 +119,7 @@ class PlayerActivity : AppCompatActivity() {
             if (player.isPlaying) {
                 player.pause()
             } else {
-                seekBar.visibility = View.VISIBLE
+                controllerLayout.visibility = View.VISIBLE
                 player.play()
             }
         }
@@ -202,10 +218,10 @@ class PlayerActivity : AppCompatActivity() {
 
                 override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
                     if (player.isPlaying) {
-                        if (seekBar.visibility == View.VISIBLE) {
-                            seekBar.visibility = View.GONE
+                        if (controllerLayout.visibility == View.VISIBLE) {
+                            controllerLayout.visibility = View.GONE
                         } else {
-                            seekBar.visibility = View.VISIBLE
+                            controllerLayout.visibility = View.VISIBLE
                             handler.removeCallbacks(hideSeekBarRunnable)
                             handler.postDelayed(hideSeekBarRunnable, 3000)
                         }
@@ -225,9 +241,13 @@ class PlayerActivity : AppCompatActivity() {
     private fun setupSeekBar() {
         handler.post(object : Runnable {
             override fun run() {
-                if (player.duration > 0 && seekBar.visibility == View.VISIBLE) {
+                // 🌟 修改：当控制栏显示时，每 500 毫秒同步更新进度条与时间文本
+                if (player.duration > 0 && controllerLayout.visibility == View.VISIBLE) {
                     seekBar.max = player.duration.toInt()
                     seekBar.progress = player.currentPosition.toInt()
+                    
+                    tvCurrentTime.text = formatTime(player.currentPosition)
+                    tvTotalDuration.text = formatTime(player.duration)
                 }
                 handler.postDelayed(this, 500)
             }
@@ -242,6 +262,9 @@ class PlayerActivity : AppCompatActivity() {
                 ) {
                     if (fromUser) {
                         player.seekTo(progress.toLong())
+                        // 🌟 新增：用户手动拖拽进度条时，即时响应刷新当前时间文本
+                        tvCurrentTime.text = formatTime(progress.toLong())
+                        
                         if (player.isPlaying) {
                             handler.removeCallbacks(hideSeekBarRunnable)
                             handler.postDelayed(hideSeekBarRunnable, 3000)
@@ -261,6 +284,22 @@ class PlayerActivity : AppCompatActivity() {
                 }
             }
         )
+    }
+
+    // 🌟 新增：将毫秒单位的时间转换为 00:00 或是 00:00:00 格式
+    private fun formatTime(timeMs: Long): String {
+        val totalSeconds = timeMs / 1000
+        val seconds = totalSeconds % 60
+        val minutes = (totalSeconds / 60) % 60
+        val hours = totalSeconds / 3600
+
+        val sb = java.lang.StringBuilder()
+        val formatter = Formatter(sb, Locale.getDefault())
+        return if (hours > 0) {
+            formatter.format("%02d:%02d:%02d", hours, minutes, seconds).toString()
+        } else {
+            formatter.format("%02d:%02d", minutes, seconds).toString()
+        }
     }
 
     override fun onPause() {
