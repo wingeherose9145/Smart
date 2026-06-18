@@ -7,34 +7,33 @@
     android:background="#000000"
     android:padding="8dp">
 
-    <!-- 显示区域 -->
-
+    <!-- 显示区域 - 已优化为跑马灯效果 -->
     <TextView
         android:id="@+id/tv_display"
         android:layout_width="match_parent"
         android:layout_height="120dp"
-
         android:gravity="center"
-
         android:text="0"
         android:textSize="26sp"
         android:textColor="#FFFFFF"
-
         android:padding="16dp"
+        android:background="#22000000"
 
-        android:maxLines="2"
+        <!-- 以下为跑马灯核心配置 -->
+        android:singleLine="true"
+        android:maxLines="1"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:isScrollContainer="true"
+        android:lines="1"
+        
+        android:lineSpacingExtra="6dp"
+        android:textAlignment="center" />
 
-    android:ellipsize="end"
-
-    android:lineSpacingExtra="6dp"
-
-    android:breakStrategy="balanced"
-
-    android:textAlignment="center"
-
-    android:background="#22000000"/>
     <!-- 按钮区域 -->
-
     <GridLayout
         android:id="@+id/grid_buttons"
         android:layout_width="match_parent"
