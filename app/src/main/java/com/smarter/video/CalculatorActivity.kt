@@ -17,16 +17,10 @@ class CalculatorActivity : AppCompatActivity() {
 
     private var inputCount = 0
 
-    // 最近输入内容（用于UI显示和层级计算，每3次会清空一次）
     private val inputHistory = mutableListOf<String>()
-
-    // 最近输入层级
     private val recentLayers = mutableListOf<Int>()
-
-    // 核心修复：独立出来的暗号专用缓存
     private val secretBuffer = mutableListOf<String>()
 
-    // 动态内容库
     private lateinit var quotesA: List<String>
     private lateinit var quotesB: List<String>
     private lateinit var quotesC: List<String>
@@ -35,45 +29,39 @@ class CalculatorActivity : AppCompatActivity() {
     private lateinit var quotesF: List<String>
     private lateinit var quotesG: List<String>
 
-    // 隐藏入口序列
     private val secretSequence = listOf(
-        "∡R",
-        "φ",
-        "%",
-        "∞",
-        "xʸ"
+        "∡R", "φ", "%", "∞", "xʸ"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         window.decorView.systemUiVisibility = (
-                View.SYSTEM_UI_FLAG_FULLSCREEN
-                        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                )
+            View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        )
 
         setContentView(R.layout.activity_calculator)
 
         display = findViewById(R.id.tv_display)
 
-        // ==================== 加强版跑马灯配置（适配最新XML） ====================
+        // ==================== 跑马灯配置 ====================
         display.apply {
             setSingleLine(true)
             maxLines = 1
             ellipsize = TextUtils.TruncateAt.MARQUEE
-            marqueeRepeatLimit = -1              // 无限循环滚动
+            marqueeRepeatLimit = -1
             isHorizontalFadingEdgeEnabled = true
             setHorizontallyScrolling(true)
-            isSelected = true                    // 必须设置为true才能触发滚动
+            isSelected = true
 
-            // 样式优化
             textSize = 26f
             setTextColor(0xFFFFFFFF.toInt())
             setPadding(16, 16, 16, 16)
             gravity = android.view.Gravity.CENTER
         }
-        // =====================================================================
+        // ================================================
 
         // 加载内容库
         quotesA = loadQuotes("a.txt")
@@ -87,7 +75,6 @@ class CalculatorActivity : AppCompatActivity() {
         setupLargeKeyboard()
     }
 
-    // 读取 assets 内容库
     private fun loadQuotes(fileName: String): List<String> {
         return try {
             assets.open(fileName)
@@ -104,23 +91,12 @@ class CalculatorActivity : AppCompatActivity() {
         grid.removeAllViews()
 
         val buttonTexts = listOf(
-            // ===== 第一层 =====
-            "≝", "Ψ", "φ", "π",
-            "♄", "♃", "☾ˣ", "%",
-            "Σ", "∫", "∞", "Ω",
-            "お", "√", "≈", "≠",
-
-            // ===== 第二层 =====
-            "☉", "θ", "∈", "λ",
-            "ℳ", "∂", "ℵ", "x̄",
-            "∀", "@", "ε₀", "∅",
-            "ℒ", "る", "む", "ℐ",
-
-            // ===== 第三层 =====
-            "|x|", "σ²", "H₀", "xʸ",
-            "∡R", "℃", "∉", "∩",
-            "⇔", "☄", "⊕", "つ",
-            "OFF", "⊂", "⇌", "Γ"
+            "≝", "Ψ", "φ", "π", "♄", "♃", "☾ˣ", "%",
+            "Σ", "∫", "∞", "Ω", "ℒ(θ)", "√", "≈", "≠",
+            "☉", "θ", "∈", "λ", "ℳ", "∂", "ℵ", "x̄",
+            "∀", "@", "ε₀", "∅", "ℒ", "ℋ", "∨", "ℐ",
+            "|x|", "σ²", "H₀", "xʸ", "∡R", "℃", "∉", "∩",
+            "⇔", "☄", "⊕", "∃", "OFF", "⊂", "⇌", "Γ"
         )
 
         buttonTexts.forEachIndexed { index, text ->
@@ -148,9 +124,7 @@ class CalculatorActivity : AppCompatActivity() {
                     setMargins(6, 6, 6, 6)
                 }
 
-                setOnClickListener {
-                    onButtonClick(text, layer)
-                }
+                setOnClickListener { onButtonClick(text, layer) }
 
                 setOnLongClickListener {
                     if (text == "|x|" && checkSecretSequence()) {
@@ -166,9 +140,7 @@ class CalculatorActivity : AppCompatActivity() {
     private fun onButtonClick(text: String, layer: Int) {
         if (text != "DEL" && text != "OFF") {
             secretBuffer.add(text)
-            if (secretBuffer.size > 5) {
-                secretBuffer.removeAt(0)
-            }
+            if (secretBuffer.size > 5) secretBuffer.removeAt(0)
         }
 
         inputCount++
@@ -181,7 +153,6 @@ class CalculatorActivity : AppCompatActivity() {
 
         if (inputCount % 3 == 0) {
             val layerSet = recentLayers.toSet()
-
             display.text = when (layerSet) {
                 setOf(1) -> quotesA.random()
                 setOf(2) -> quotesB.random()
@@ -192,7 +163,6 @@ class CalculatorActivity : AppCompatActivity() {
                 setOf(1, 2, 3) -> quotesG.random()
                 else -> "NULL"
             }
-
             inputHistory.clear()
             recentLayers.clear()
         } else {
@@ -221,7 +191,6 @@ class CalculatorActivity : AppCompatActivity() {
 
     private fun enterRealPlayer() {
         Toast.makeText(this, "验证通过...", Toast.LENGTH_SHORT).show()
-
         val intent = Intent(this, MainActivity::class.java).apply {
             putExtra("SECURE_ENTRY_TOKEN", "PASSED_FROM_CALCULATOR_2026")
         }
