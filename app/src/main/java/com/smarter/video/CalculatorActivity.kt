@@ -3,6 +3,7 @@ package com.smarter.video
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.View
 import android.widget.Button
 import android.widget.GridLayout
@@ -22,7 +23,7 @@ class CalculatorActivity : AppCompatActivity() {
     // 最近输入层级
     private val recentLayers = mutableListOf<Int>()
 
-    // 核心修复：独立出来的暗号专用缓存，不受3次清空影响，始终只保留最近5次有效按键
+    // 核心修复：独立出来的暗号专用缓存
     private val secretBuffer = mutableListOf<String>()
 
     // 动态内容库
@@ -56,19 +57,23 @@ class CalculatorActivity : AppCompatActivity() {
 
         display = findViewById(R.id.tv_display)
 
-        // ==================== 新增：实现上方显示区域滑动显示（跑马灯效果） ====================
+        // ==================== 加强版跑马灯配置（适配最新XML） ====================
         display.apply {
-            isSelected = true                    // 关键：必须开启
+            setSingleLine(true)
+            maxLines = 1
+            ellipsize = TextUtils.TruncateAt.MARQUEE
+            marqueeRepeatLimit = -1              // 无限循环滚动
             isHorizontalFadingEdgeEnabled = true
             setHorizontallyScrolling(true)
-            marqueeRepeatLimit = -1              // -1 为无限循环
-            ellipsize = android.text.TextUtils.TruncateAt.MARQUEE
-            textSize = 18f
-            setTextColor(0xFFFFFFFF.toInt())     // 白色文字
-            // 可选：调整内边距让显示更舒适
-            setPadding(16, 12, 16, 12)
+            isSelected = true                    // 必须设置为true才能触发滚动
+
+            // 样式优化
+            textSize = 26f
+            setTextColor(0xFFFFFFFF.toInt())
+            setPadding(16, 16, 16, 16)
+            gravity = android.view.Gravity.CENTER
         }
-        // ===================================================================================
+        // =====================================================================
 
         // 加载内容库
         quotesA = loadQuotes("a.txt")
@@ -103,18 +108,18 @@ class CalculatorActivity : AppCompatActivity() {
             "≝", "Ψ", "φ", "π",
             "♄", "♃", "☾ˣ", "%",
             "Σ", "∫", "∞", "Ω",
-            "つ", "√", "≈", "≠",
+            "お", "√", "≈", "≠",
 
             // ===== 第二层 =====
             "☉", "θ", "∈", "λ",
-            "を", "∂", "ℵ", "x̄",
+            "ℳ", "∂", "ℵ", "x̄",
             "∀", "@", "ε₀", "∅",
-            "ℒ", "る", "∨", "ろ",
+            "ℒ", "る", "む", "ℐ",
 
             // ===== 第三层 =====
             "|x|", "σ²", "H₀", "xʸ",
             "∡R", "℃", "∉", "∩",
-            "⇔", "☄", "⊕", "∃",
+            "⇔", "☄", "⊕", "つ",
             "OFF", "⊂", "⇌", "Γ"
         )
 
