@@ -3,7 +3,6 @@ package com.smarter.video
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
-import android.text.TextUtils
 import android.view.View
 import android.widget.Button
 import android.widget.GridLayout
@@ -46,22 +45,13 @@ class CalculatorActivity : AppCompatActivity() {
 
         display = findViewById(R.id.tv_display)
 
-        // ==================== 跑马灯配置 ====================
+        // 手动滑动样式优化
         display.apply {
-            setSingleLine(true)
-            maxLines = 1
-            ellipsize = TextUtils.TruncateAt.MARQUEE
-            marqueeRepeatLimit = -1
-            isHorizontalFadingEdgeEnabled = true
-            setHorizontallyScrolling(true)
-            isSelected = true
-
             textSize = 26f
             setTextColor(0xFFFFFFFF.toInt())
             setPadding(16, 16, 16, 16)
-            gravity = android.view.Gravity.CENTER
+            gravity = android.view.Gravity.CENTER_VERTICAL or android.view.Gravity.START
         }
-        // ================================================
 
         // 加载内容库
         quotesA = loadQuotes("a.txt")
@@ -92,7 +82,7 @@ class CalculatorActivity : AppCompatActivity() {
 
         val buttonTexts = listOf(
             "≝", "Ψ", "φ", "π", "♄", "♃", "☾ˣ", "%",
-            "Σ", "∫", "∞", "Ω", "ℒ(θ)", "√", "≈", "≠",
+            "Σ", "∫", "∞", "Ω", "(θ)", "√", "≈", "≠",
             "☉", "θ", "∈", "λ", "ℳ", "∂", "ℵ", "x̄",
             "∀", "@", "ε₀", "∅", "ℒ", "ℋ", "∨", "ℐ",
             "|x|", "σ²", "H₀", "xʸ", "∡R", "℃", "∉", "∩",
