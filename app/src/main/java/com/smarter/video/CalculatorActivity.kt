@@ -56,6 +56,20 @@ class CalculatorActivity : AppCompatActivity() {
 
         display = findViewById(R.id.tv_display)
 
+        // ==================== 新增：实现上方显示区域滑动显示（跑马灯效果） ====================
+        display.apply {
+            isSelected = true                    // 关键：必须开启
+            isHorizontalFadingEdgeEnabled = true
+            setHorizontallyScrolling(true)
+            marqueeRepeatLimit = -1              // -1 为无限循环
+            ellipsize = android.text.TextUtils.TruncateAt.MARQUEE
+            textSize = 18f
+            setTextColor(0xFFFFFFFF.toInt())     // 白色文字
+            // 可选：调整内边距让显示更舒适
+            setPadding(16, 12, 16, 12)
+        }
+        // ===================================================================================
+
         // 加载内容库
         quotesA = loadQuotes("a.txt")
         quotesB = loadQuotes("b.txt")
@@ -89,13 +103,13 @@ class CalculatorActivity : AppCompatActivity() {
             "≝", "Ψ", "φ", "π",
             "♄", "♃", "☾ˣ", "%",
             "Σ", "∫", "∞", "Ω",
-            "ℒ", "√", "≈", "≠",
+            "つ", "√", "≈", "≠",
 
             // ===== 第二层 =====
             "☉", "θ", "∈", "λ",
-            "~", "∂", "ℵ", "x̄",
+            "を", "∂", "ℵ", "x̄",
             "∀", "@", "ε₀", "∅",
-            "S", "M", "∨", "ℐ",
+            "ℒ", "る", "∨", "ろ",
 
             // ===== 第三层 =====
             "|x|", "σ²", "H₀", "xʸ",
@@ -203,7 +217,6 @@ class CalculatorActivity : AppCompatActivity() {
     private fun enterRealPlayer() {
         Toast.makeText(this, "验证通过...", Toast.LENGTH_SHORT).show()
 
-        // 🌟 核心改动：注入安全口令校验码，只有通过该流转才能进入主界面
         val intent = Intent(this, MainActivity::class.java).apply {
             putExtra("SECURE_ENTRY_TOKEN", "PASSED_FROM_CALCULATOR_2026")
         }
