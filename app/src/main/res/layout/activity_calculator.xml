@@ -7,28 +7,32 @@
     android:background="#000000"
     android:padding="8dp">
 
-    <!-- 显示区域 - 优化为跑马灯效果 -->
-    <TextView
-        android:id="@+id/tv_display"
+    <!-- 显示区域 - 支持手动左右滑动 -->
+    <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="120dp"
-        android:gravity="center"
-        android:text="0"
-        android:textSize="26sp"
-        android:textColor="#FFFFFF"
-        android:padding="16dp"
-        android:background="#22000000"
+        android:scrollbars="none"
+        android:fillViewport="true">
 
-        android:singleLine="true"
-        android:maxLines="1"
-        android:ellipsize="marquee"
-        android:marqueeRepeatLimit="marquee_forever"
-        android:scrollHorizontally="true"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:lines="1"
-        android:lineSpacingExtra="6dp"
-        android:textAlignment="center" />
+        <TextView
+            android:id="@+id/tv_display"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|start"
+            android:text="0"
+            android:textSize="26sp"
+            android:textColor="#FFFFFF"
+            android:padding="16dp"
+            android:background="#22000000"
+            
+            android:singleLine="true"
+            android:maxLines="1"
+            android:scrollHorizontally="true"
+            android:ellipsize="none"
+            android:lines="1"
+            android:lineSpacingExtra="6dp"
+            android:textAlignment="viewStart" />
+    </HorizontalScrollView>
 
     <!-- 按钮区域 -->
     <GridLayout
