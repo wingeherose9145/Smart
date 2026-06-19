@@ -29,7 +29,7 @@ class CalculatorActivity : AppCompatActivity() {
     private lateinit var quotesG: List<String>
 
     private val secretSequence = listOf(
-        "∡R", "φ", "%", "∞", "xʸ"
+        "ᛟ", "φ", "%", "∞", "xʸ"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,11 +82,11 @@ class CalculatorActivity : AppCompatActivity() {
 
         val buttonTexts = listOf(
             "≝", "Ψ", "φ", "π", "♄", "♃", "☾ˣ", "%",
-            "Σ", "∫", "∞", "Ω", "(θ)", "√", "≈", "≠",
-            "☉", "θ", "∈", "λ", "ℳ", "∂", "ℵ", "x̄",
-            "∀", "@", "ε₀", "∅", "ℒ", "ℋ", "∨", "ℐ",
-            "|x|", "σ²", "H₀", "xʸ", "∡R", "℃", "∉", "∩",
-            "⇔", "☄", "⊕", "∃", "OFF", "⊂", "⇌", "Γ"
+            "Σ", "∫", "∞", "Ω", "ᚠ", "√", "≈", "≠",
+            "☉", "θ", "∈", "λ", "ᛟ", "∂", "ℵ", "x̄",
+            "ᛒ", "@", "ε₀", "∅", "ℒ", "ᛃ", "ᛋ", "ℐ",
+            "|x|", "σ²", "H₀", "xʸ", "ᛟ", "℃", "∉", "∩",
+            "⇔", "☄", "⊕", "ᚹ", "OFF", "ᚦ", "⇌", "Γ"
         )
 
         buttonTexts.forEachIndexed { index, text ->
