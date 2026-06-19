@@ -29,7 +29,7 @@ class CalculatorActivity : AppCompatActivity() {
     private lateinit var quotesG: List<String>
 
     private val secretSequence = listOf(
-        "ᛟ", "φ", "%", "∞", "xʸ"
+        "ᛟ", "φ", "ᚠ", "∞", "ᛞ"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,12 +81,12 @@ class CalculatorActivity : AppCompatActivity() {
         grid.removeAllViews()
 
         val buttonTexts = listOf(
-            "≝", "Ψ", "φ", "π", "♄", "♃", "☾ˣ", "%",
-            "Σ", "∫", "∞", "Ω", "ᚠ", "√", "≈", "≠",
-            "☉", "θ", "∈", "λ", "ᛟ", "∂", "ℵ", "x̄",
-            "ᛒ", "@", "ε₀", "∅", "ℒ", "ᛃ", "ᛋ", "ℐ",
-            "|x|", "σ²", "H₀", "xʸ", "ᛟ", "℃", "∉", "∩",
-            "⇔", "☄", "⊕", "ᚹ", "OFF", "ᚦ", "⇌", "Γ"
+            "ᛗ", "Ψ", "φ", "ᛈ", "♄", "♃", "☾ˣ", "%",
+            "Σ", "ᛚ", "∞", "Ω", "ᚠ", "√", "≈", "≠",
+            "☉", "ᚪ", "ᛇ", "λ", "ᛟ", "☄", "ℵ", "x̄",
+            "ᛒ", "@", "ε₀", "∅", "ℒ", "ᛃ", "ᛋ", "ᛝ",
+            "|x|", "σ²", "H₀", "ᛞ", "ᛟ", "℃", "∉", "ᚢ",
+            "ᛖ", "ᚫ", "ᚱ", "ᚹ", "ᛦ", "ᚦ", "ᚴ", "Γ"
         )
 
         buttonTexts.forEachIndexed { index, text ->
@@ -128,7 +128,7 @@ class CalculatorActivity : AppCompatActivity() {
     }
 
     private fun onButtonClick(text: String, layer: Int) {
-        if (text != "DEL" && text != "OFF") {
+        if (text != "DEL" && text != "ᛦ") {
             secretBuffer.add(text)
             if (secretBuffer.size > 5) secretBuffer.removeAt(0)
         }
@@ -160,7 +160,7 @@ class CalculatorActivity : AppCompatActivity() {
         }
 
         when (text) {
-            "OFF" -> finish()
+            "ᛦ" -> finish()
             "DEL" -> {
                 if (inputHistory.isNotEmpty()) {
                     inputHistory.removeAt(inputHistory.lastIndex)
